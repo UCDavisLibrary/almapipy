@@ -57,4 +57,5 @@ class AlmaCnxn(Client):
         ns = {'header': 'http://com/exlibris/urm/general/xmlbeans'}
         self.cnxn_params['xml_ns'] = ns
 
+        # Hook in the various Alma APIs
         self.bibs = SubClientBibs(self.cnxn_params)

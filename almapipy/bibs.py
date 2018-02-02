@@ -21,6 +21,8 @@ class SubClientBibs(Client):
         # Hook in subclients of bib
         self.catalog = SubClientBibsCatalog(self.cnxn_params)
         self.collections = SubClientBibsCollections(self.cnxn_params)
+        self.loans = SubClientBibsLoans(self.cnxn_params)
+        self.requests = SubClientBibsRequests(self.cnxn_params)
 
 
 class SubClientBibsCatalog(Client):
@@ -215,6 +217,212 @@ class SubClientBibsCollections(Client):
 
         args = q_params.copy()
         args['apikey'] = self.cnxn_params['api_key']
+
+        if raw:
+            return self.fetch(url, args, raw=True)
+        else:
+            return self.fetch(url, args)
+
+
+class SubClientBibsLoans(Client):
+    """Accesses loans endpoints"""
+
+    def __init__(self, cnxn_params={}):
+        self.cnxn_params = cnxn_params.copy()
+
+    def get_by_item(self, bib_id, holding_id, item_id,
+                    loan_id=None, q_params={}, raw=False):
+        """Returns Loan by Item information.
+
+        Args:
+            bib_id (str): The bib ID (mms_id).
+            holding_id (str): The Holding Record ID (holding_id).
+            item_id (str): The holding item ID (item_pid).
+            loan_id (str): The loan ID
+            q_params (dict): Any additional query parameters.
+            raw (bool): If true, returns raw requests object.
+
+        Returns:
+            List of loans or a single loan for a given item.
+        """
+        url = self.cnxn_params['api_uri_full']
+        url += ("/" + str(bib_id))
+        url += ('/holdings/' + str(holding_id))
+        url += ('/items/' + str(item_id) + "/loans")
+        if loan_id:
+            url += ('/' + str(loan_id))
+
+        args = q_params.copy()
+        args['apikey'] = self.cnxn_params['api_key']
+
+        if raw:
+            return self.fetch(url, args, raw=True)
+        else:
+            return self.fetch(url, args)
+
+    def get_by_title(self, bib_id, loan_id=None, q_params={}, raw=False):
+        """Returns Loan by title information.
+
+        Args:
+            bib_id (str): The bib ID (mms_id).
+            loan_id (str): The loan ID
+            q_params (dict): Any additional query parameters.
+            raw (bool): If true, returns raw requests object.
+
+        Returns:
+            List of loans or a single loan for a given title.
+        """
+        url = self.cnxn_params['api_uri_full']
+        url += ("/" + str(bib_id) + '/loans')
+        if loan_id:
+            url += ('/' + str(loan_id))
+
+        args = q_params.copy()
+        args['apikey'] = self.cnxn_params['api_key']
+
+        if raw:
+            return self.fetch(url, args, raw=True)
+        else:
+            return self.fetch(url, args)
+
+
+class SubClientBibsRequests(Client):
+    """Accesses user request endpoints"""
+
+    def __init__(self, cnxn_params={}):
+        self.cnxn_params = cnxn_params.copy()
+
+    def get_by_item(self, bib_id, holding_id, item_id,
+                    request_id=None, q_params={}, raw=False):
+        """Returns Loan by Item information.
+
+        Args:
+            bib_id (str): The bib ID (mms_id).
+            holding_id (str): The Holding Record ID (holding_id).
+            item_id (str): The holding item ID (item_pid).
+            request_id (str): The loan ID
+            q_params (dict): Any additional query parameters.
+            raw (bool): If true, returns raw requests object.
+
+        Returns:
+            List of loans or a single loan for a given item.
+        """
+        url = self.cnxn_params['api_uri_full']
+        url += ("/" + str(bib_id))
+        url += ('/holdings/' + str(holding_id))
+        url += ('/items/' + str(item_id) + "/requests")
+        if request_id:
+            url += ('/' + str(request_id))
+
+        args = q_params.copy()
+        args['apikey'] = self.cnxn_params['api_key']
+
+        if raw:
+            return self.fetch(url, args, raw=True)
+        else:
+            return self.fetch(url, args)
+
+    def get_by_title(self, bib_id, request_id=None, q_params={}, raw=False):
+        """Returns Loan by title information.
+
+        Args:
+            bib_id (str): The bib ID (mms_id).
+            request_id (str): The loan ID
+            q_params (dict): Any additional query parameters.
+            raw (bool): If true, returns raw requests object.
+
+        Returns:
+            List of loans or a single loan for a given title.
+        """
+        url = self.cnxn_params['api_uri_full']
+        url += ("/" + str(bib_id) + '/requests')
+        if request_id:
+            url += ('/' + str(request_id))
+
+        args = q_params.copy()
+        args['apikey'] = self.cnxn_params['api_key']
+
+        if raw:
+            return self.fetch(url, args, raw=True)
+        else:
+            return self.fetch(url, args)
+
+    def get_availability(self, bib_id, period, period_type='days',
+                         holding_id=None, item_id=None, q_params={}, raw=False):
+        """Returns list of periods in which specific title or item
+        is unavailable for booking.
+
+        To get a specific item, holding_id and item_id parameters are required.
+
+        Note: user_id does not populate if retrieving by just bid_id.
+
+        Args:
+            bib_id (str): The bib ID (mms_id).
+            period (str or int): The number of days/weeks/months to retrieve availability for.
+            period_type (str): 	The type of period of interest. Optional. Possible values: days, weeks, months.
+            holding_id (str): The Holding Record ID (holding_id).
+            item_id (str): The holding item ID (item_pid).
+            q_params (dict): Any additional query parameters.
+            raw (bool): If true, returns raw requests object.
+
+        Returns:
+            List of periods title/item is unavailable for booking.
+        """
+        url = self.cnxn_params['api_uri_full']
+        url += ("/" + str(bib_id))
+        if holding_id and item_id:
+            url += ("/holdings/" + str(holding_id))
+            url += ('/items/' + str(item_id))
+        elif holding_id or item_id:
+            message = "If getting availability for an item, "
+            message += "Both holding_id and item_id are required arguments."
+            raise utils.ArgError(message)
+        url += "/booking-availability"
+
+        args = q_params.copy()
+        args['apikey'] = self.cnxn_params['api_key']
+        args['period'] = str(period)
+        args['period_type'] = str(period_type)
+
+        if raw:
+            return self.fetch(url, args, raw=True)
+        else:
+            return self.fetch(url, args)
+
+    def get_options(self, bib_id, user_id='GUEST',
+                    holding_id=None, item_id=None,
+                    q_params={}, raw=False):
+        """Returns request options for a specific title or item based on user.
+
+        To get a specific item, holding_id and item_id parameters are required.
+
+        Note: user_id does not populate if retrieving by just bid_id.
+
+        Args:
+            bib_id (str): The bib ID (mms_id).
+            user_id (str): The id of the user for which the request options will be calculated.
+            holding_id (str): The Holding Record ID (holding_id).
+            item_id (str): The holding item ID (item_pid).
+            q_params (dict): Any additional query parameters.
+            raw (bool): If true, returns raw requests object.
+
+        Returns:
+            Request options for a specific title or item based on user.
+        """
+        url = self.cnxn_params['api_uri_full']
+        url += ("/" + str(bib_id))
+        if holding_id and item_id:
+            url += ("/holdings/" + str(holding_id))
+            url += ('/items/' + str(item_id))
+        elif holding_id or item_id:
+            message = "If getting request options for an item, "
+            message += "Both holding_id and item_id are required arguments."
+            raise utils.ArgError(message)
+        url += "/request-options"
+
+        args = q_params.copy()
+        args['apikey'] = self.cnxn_params['api_key']
+        args['user_id'] = str(user_id)
 
         if raw:
             return self.fetch(url, args, raw=True)
