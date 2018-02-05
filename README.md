@@ -9,9 +9,9 @@ Version 1.0.0 currently under development. Not available through pip yet.
 
 ### Import
 ```python
-# Instantiate primary Client class
-from almapipy import AlmaCnxn()
-alma = AlmaCnxn('your_api_key')
+# Import and call primary Client class
+from almapipy import AlmaCnxn
+alma = AlmaCnxn('your_api_key', format='json')
 ```
 ### Access Bibliographic Data
 ```python
@@ -25,12 +25,18 @@ holdings = alma.bibs.catalog.get_holdings(harry_potter)
 # get loans
 loans = alma.bibs.loans.get_by_title(harry_potter)
 # or
-loans = alma.bibs.loans.get_by_item(harry_potter,holding_id,item_id)
+loans = alma.bibs.loans.get_by_item(harry_potter, holding_id, item_id)
 
-# get requests or availability
+# get requests or availability of bib
 alma.bibs.requests.get_by_title(harry_potter)
-alma.bibs.requests.get_by_item(harry_potter,holding_id,item_id)
+alma.bibs.requests.get_by_item(harry_potter, holding_id, item_id)
 alma.bibs.requests.get_availability(harry_potter, period=20)
+
+# get digital representations
+alma.bibs.representations.get(harry_potter)
+
+# get linked data
+alma.bibs.linked_data.get(harry_potter)
 ```
 ## Attribution
 

@@ -46,9 +46,6 @@ class AlmaCnxn(Client):
         self.cnxn_params['location'] = location
         self.cnxn_params['base_uri'] = locations[location]
 
-        # TODO: validate api key. return list of accessible endpoints
-        self.cnxn_params['api_key'] = apikey
-
         # handle preferred format
         if data_format not in ['json', 'xml']:
             message = "Format argument must be either 'json' or 'xml'"
@@ -57,5 +54,13 @@ class AlmaCnxn(Client):
         ns = {'header': 'http://com/exlibris/urm/general/xmlbeans'}
         self.cnxn_params['xml_ns'] = ns
 
+        # TODO: validate api key. return list of accessible endpoints
+        self.cnxn_params['api_key'] = apikey
+
         # Hook in the various Alma APIs
         self.bibs = SubClientBibs(self.cnxn_params)
+
+    def __validate_key__(self, apikey):
+        # loop through each api and access the /test endpoint.
+        # return list of accessible apis.
+        pass
