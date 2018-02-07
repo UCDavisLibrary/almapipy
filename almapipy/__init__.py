@@ -7,7 +7,8 @@ __version__ = "0.0.9"
 import os
 
 from .client import Client
-from .bibs import SubClientBibs, SubClientBibsCatalog
+from .bibs import SubClientBibs
+from .analytics import SubClientAnalytics
 from . import utils
 
 
@@ -55,10 +56,12 @@ class AlmaCnxn(Client):
         self.cnxn_params['xml_ns'] = ns
 
         # TODO: validate api key. return list of accessible endpoints
+        # call __validate_key__
         self.cnxn_params['api_key'] = apikey
 
-        # Hook in the various Alma APIs
+        # Hook in the various Alma APIs based on what API key can access
         self.bibs = SubClientBibs(self.cnxn_params)
+        self.analytics = SubClientAnalytics(self.cnxn_params)
 
     def __validate_key__(self, apikey):
         # loop through each api and access the /test endpoint.

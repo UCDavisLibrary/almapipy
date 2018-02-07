@@ -30,7 +30,7 @@ class Client(object):
             raw (bool): If true, returns raw response.
 
         Returns:
-            JSON-esque or raw response.
+            JSON-esque, xml, or raw response.
         """
         print(url)
 
@@ -46,9 +46,13 @@ class Client(object):
             return response
 
         # Get meta data from headers.
-        response_type = response.headers['Content-Type']
-        response_type, charset = response_type.split(";")
         status = response.status_code
+        try:
+            response_type = response.headers['Content-Type']
+            response_type, charset = response_type.split(";")
+        except:
+            message = str(status) + " - Unknown Error"
+            raise utils.AlmaError(message, status, url)
 
         # decode response if xml.
         if response_type == 'application/xml':

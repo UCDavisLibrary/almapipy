@@ -5,6 +5,21 @@ almapipy is python requests wrapper for easily accessing the Ex Libris Alma API.
 ## Installation
 Version 1.0.0 currently under development. Not available through pip yet.
 
+## Progress and Roadmap
+First stage is to develop read functionality around all the Alma APIs. Once completed, Post, Put and Delete will follow.
+
+| API | Get | Post | Put | Delete |
+| --- | :---: | :---: | :---: | :---: |
+| bibs | X | | | |
+| analytics | X | | | |
+| acquisitions | | | | |
+| configuration | | | | |
+| courses | | | | |
+| resource sharing partners | | | | |
+| task-lists | | | | |
+| users | | | | |
+| electronic | | | | |
+
 ## Use
 
 ### Import
@@ -38,6 +53,15 @@ alma.bibs.representations.get(harry_potter)
 # get linked data
 alma.bibs.linked_data.get(harry_potter)
 ```
-## Attribution
+
+### Access Reports
+```python
+# Find the system path to the report
+alma.analytics.paths.get('/shared')
+
+# retrieve the report as an XML ET element
+report = alma.analytics.reports.get('path_to_report')
+```
+## Attribution and Contact
 
 * **Author**: [Steve Pelkey](mailto:spelkey@ucdavis.edu)
