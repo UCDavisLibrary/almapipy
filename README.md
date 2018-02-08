@@ -10,8 +10,8 @@ First stage is to develop read functionality around all the Alma APIs. Once comp
 
 | API | Get | Post | Put | Delete |
 | --- | :---: | :---: | :---: | :---: |
-| bibs | X | | | |
-| analytics | X | | | |
+| [bibs](#access-bibliographic-data) | X | | | |
+| [analytics](#access-reports) | X | | | |
 | acquisitions | | | | |
 | configuration | | | | |
 | courses | | | | |
