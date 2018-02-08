@@ -9,6 +9,7 @@ import os
 from .client import Client
 from .bibs import SubClientBibs
 from .analytics import SubClientAnalytics
+from .courses import SubClientCourses
 from . import utils
 
 
@@ -62,6 +63,7 @@ class AlmaCnxn(Client):
         # Hook in the various Alma APIs based on what API key can access
         self.bibs = SubClientBibs(self.cnxn_params)
         self.analytics = SubClientAnalytics(self.cnxn_params)
+        self.courses = SubClientCourses(self.cnxn_params)
 
     def __validate_key__(self, apikey):
         # loop through each api and access the /test endpoint.
