@@ -65,10 +65,10 @@ class SubClientAnalyticsReports(Client):
         self.cnxn_params['api_uri'] += '/reports'
         self.cnxn_params['api_uri_full'] += '/reports'
 
-    def get(self, path, _filter=None, limit=25, col_names=True, all_records=False,
-            q_params={}, raw=False):
+    def get(self, path, _filter=None, limit=25, col_names=True, return_json=False,
+            all_records=False, q_params={}, raw=False):
         """This API returns an Alma Analytics report as XML.
-        JSON currently unavailable.
+        JSON currently unavailable. Use return_json param to convert after the call.
 
         Args:
             path (str): path of report relative to report root.
@@ -79,6 +79,7 @@ class SubClientAnalyticsReports(Client):
                 Between 25 and 1000 (multiples of 25).
             col_names (bool): Include column heading information.
                 To ensure consistent sort order it might be required to turn it off.
+            return_json (false): If True, converts xml into json-like structure.
             all_records (bool): Return all rows for a report.
                 Otherwise returns number specified by limit.
             q_params (dict): Any additional query parameters.
@@ -86,7 +87,7 @@ class SubClientAnalyticsReports(Client):
                 If all_records == True, returns a list.
 
         Returns:
-            A list of collections or a collection for a given pid.
+            XML ET or json-like structure of report,
 
         """
         url = self.cnxn_params['api_uri_full']
@@ -99,7 +100,9 @@ class SubClientAnalyticsReports(Client):
         args['col_names'] = col_names
         if _filter:
             args['filter'] = _filter
-
+        row_tag = "{urn:schemas-microsoft-com:xml-analysis:rowset}Row"
+        set_tag = "{urn:schemas-microsoft-com:xml-analysis:rowset}rowset"
+        columns_tag = "{http://www.w3.org/2001/XMLSchema}element"
         report = self.fetch(url, args, raw=raw)
 
         if raw:
@@ -121,8 +124,6 @@ class SubClientAnalyticsReports(Client):
                 margs['format'] = 'xml'
 
                 # find report content in XML report
-                row_tag = "{urn:schemas-microsoft-com:xml-analysis:rowset}Row"
-                set_tag = "{urn:schemas-microsoft-com:xml-analysis:rowset}rowset"
                 xml_rows = list(report.iter(set_tag))[0]
             else:
                 get_more = False
@@ -146,5 +147,28 @@ class SubClientAnalyticsReports(Client):
 
         if raw:
             return responses
+
+        if return_json:
+            # extract column names
+            columns_tag = "{http://www.w3.org/2001/XMLSchema}element"
+            columns = list(report.iter(columns_tag))
+            headers = {}
+            for col in columns:
+                key = col.attrib['name']
+                try:
+                    value = col.attrib['{urn:saw-sql}columnHeading']
+                except:
+                    value = col.attrib['name']
+                value = value.lower().replace(" ", "_")
+                headers[key] = value
+
+            # covert to list of dicts
+            dicts = []
+            rows = report.iter(row_tag)
+            for row in rows:
+                values = [col.text for col in row]
+                keys = [headers[col.tag.split('}')[-1]] for col in row]
+                dicts.append({key: value for key, value in zip(keys, values)})
+            return dicts
 
         return report
