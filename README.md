@@ -17,7 +17,7 @@ First stage is to develop read functionality around all the Alma APIs. Once comp
 | [courses](#access-courses) | X | | | |
 | resource sharing partners | | | | |
 | task-lists | | | | |
-| users | | | | |
+| [users](#access-users) | X | | | |
 | electronic | | | | |
 
 ## Use
@@ -84,6 +84,24 @@ alma.courses.reading_lists(course_id, reading_list_id, view = 'full')
 
 # get citations for a reading list
 alma.courses.citations(course_id, reading_list_id)
+```
+
+### Access Users
+```python
+# Get a list of users or filter on search parameters
+users = alma.users.get(query = {'first_name': 'Sterling', 'last_name': 'Archer'})
+
+# get more information on that user
+user_id = users['user'][0]['primary_id']
+alma.users.get(user_id)
+
+# get all loans or requests for a user in 100 record increments
+loans = alma.user.loans.get(user_id, limit = 100, all_records = True)
+requests = alma.user.requests.get(user_id, limit = 100, all_records = True)
+
+# get deposits or fees for a user
+deposits = alma.users.deposits.get(user_id)
+fees = alma.users.fees.get(user_id)
 ```
 ## Attribution and Contact
 
