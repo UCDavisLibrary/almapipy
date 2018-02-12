@@ -14,7 +14,7 @@ First stage is to develop read functionality around all the Alma APIs. Once comp
 | [analytics](#access-reports) | X | NA | NA | NA |
 | acquisitions | | | | |
 | configuration | | | | |
-| courses | | | | |
+| [courses](#access-courses) | X | | | |
 | resource sharing partners | | | | |
 | task-lists | | | | |
 | users | | | | |
@@ -60,8 +60,10 @@ alma.bibs.linked_data.get(harry_potter)
 alma.analytics.paths.get('/shared')
 
 # retrieve the report as an XML ET element
-# json is currently unavailable
 report = alma.analytics.reports.get('path_to_report')
+
+# or convert the xml to json after API call
+report = alma.analytics.reports.get('path_to_report', return_json = True)
 ```
 
 ### Access Courses
