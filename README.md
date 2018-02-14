@@ -12,7 +12,7 @@ First stage is to develop read functionality around all the Alma APIs. Once comp
 | --- | :---: | :---: | :---: | :---: |
 | [bibs](#access-bibliographic-data) | X | | | |
 | [analytics](#access-reports) | X | NA | NA | NA |
-| acquisitions | | | | |
+| [acquisitions](#access-acquisitions) | X | | | |
 | configuration | | | | |
 | [courses](#access-courses) | X | | | |
 | resource sharing partners | | | | |
@@ -29,6 +29,7 @@ from almapipy import AlmaCnxn
 alma = AlmaCnxn('your_api_key', format='json')
 ```
 ### Access Bibliographic Data
+Alma provides a set of Web services for handling bibliographic records related information, enabling you to quickly and easily manipulate bibliographic records related details. These Web services can be used by external systems to retrieve or update bibliographic records related data.
 ```python
 # Use Alma mms_id for retrieving bib records
 harry_potter = "9980963346303126"
@@ -55,6 +56,7 @@ alma.bibs.linked_data.get(harry_potter)
 ```
 
 ### Access Reports
+The Analytics API returns an Alma report (in XML format only).
 ```python
 # Find the system path to the report if don't know path
 alma.analytics.paths.get('/shared')
@@ -67,6 +69,7 @@ report = alma.analytics.reports.get('path_to_report', return_json = True)
 ```
 
 ### Access Courses
+Alma provides a set of Web services for handling courses and reading lists related information, enabling you to quickly and easily manipulate their details. These Web services can be used by external systems such as Courses Management Systems to retrieve or update courses and reading lists related data.
 ```python
 # Get a complete list of courses in 1000 record increments
 course_list = alma.courses.get(limit = 1000, all_records = True)
@@ -87,6 +90,7 @@ alma.courses.citations(course_id, reading_list_id)
 ```
 
 ### Access Users
+Alma provides a set of Web services for handling user information, enabling you to quickly and easily manipulate user details. These Web services can be used by external systems—such as student information systems (SIS)—to retrieve or update user data.
 ```python
 # Get a list of users or filter on search parameters
 users = alma.users.get(query = {'first_name': 'Sterling', 'last_name': 'Archer'})
@@ -102,6 +106,33 @@ requests = alma.user.requests.get(user_id, limit = 100, all_records = True)
 # get deposits or fees for a user
 deposits = alma.users.deposits.get(user_id)
 fees = alma.users.fees.get(user_id)
+```
+### Access Acquisitions
+Alma provides a set of Web services for handling acquisitions information, enabling you to quickly and easily manipulate acquisitions details. These Web services can be used by external systems - such as subscription agent systems - to retrieve or update acquisitions data.
+```python
+# get all funds
+alma.acq.funds.get(limit = 100, all_records=True)
+
+# get po_lines by search
+amazon_lines = alma.acq.po_lines.get(query={'vendor_account': 'AMAZON'})
+single_line_id = amazon_lines['po_line'][0]['number']
+# or by a specific line number
+alma.acq.po_lines.get(single_line_id)
+
+# search for a vendor
+alma.acq.vendors.get(status='active', query={'name':'AMAZON'})
+# or get a specific vendor
+alma.acq.vendors.get('AMAZON.COM')
+
+# get invoices or polines for a specific vendor
+alma.acq.vendors.get_invoices('AMAZON.COM')
+alma.acq.vendors.get_po_lines('AMAZON.COM')
+
+# or get specific invoices
+alma.acq.invoices.get('invoice_id')
+
+# get all licenses
+alma.acq.licenses.get(limit = 100, all_records=True)
 ```
 ## Attribution and Contact
 

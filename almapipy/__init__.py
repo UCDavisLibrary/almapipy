@@ -10,6 +10,8 @@ from .client import Client
 from .bibs import SubClientBibs
 from .analytics import SubClientAnalytics
 from .courses import SubClientCourses
+from .users import SubClientUsers
+from .acquisitions import SubClientAcquistions
 from . import utils
 
 
@@ -64,6 +66,8 @@ class AlmaCnxn(Client):
         self.bibs = SubClientBibs(self.cnxn_params)
         self.analytics = SubClientAnalytics(self.cnxn_params)
         self.courses = SubClientCourses(self.cnxn_params)
+        self.users = SubClientUsers(self.cnxn_params)
+        self.acq = SubClientAcquistions(self.cnxn_params)
 
     def __validate_key__(self, apikey):
         # loop through each api and access the /test endpoint.
