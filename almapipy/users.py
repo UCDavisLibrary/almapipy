@@ -74,15 +74,7 @@ class SubClientUsers(Client):
 
             # add search query if specified in desired format
             if query:
-                q_str = ""
-                i = 0
-                for field, filter_value in query.items():
-                    if i > 0:
-                        q_str += " AND "
-                    q_str += (field + "~")
-                    q_str += filter_value.replace(" ", "_")
-                    i += 1
-                args['q'] = q_str
+                args['q'] = self.__format_query__(query)
 
         response = self.fetch(url, args, raw=raw)
         if user_id:
@@ -90,41 +82,8 @@ class SubClientUsers(Client):
 
         # make multiple api calls until all records are retrieved
         if all_records:
-            if raw:
-                responses = [response]
-                response = response.json()
-            args['offset'] = limit
-
-            # get total record count of query
-            if type(response) == dict:
-                total_records = int(response['total_record_count'])
-            elif type(response) == ET.Element:
-                total_records = int(response.attrib['total_record_count'])
-            else:
-                total_records = limit
-
-            records_retrieved = limit
-            while True:
-                if total_records <= records_retrieved:
-                    break
-
-                # make call and increment counter variables
-                new_response = self.fetch(url, args, raw=raw)
-                records_retrieved += limit
-                args['offset'] += limit
-
-                # append new records to initial response
-                if type(new_response) == dict:
-                    total_records = response['total_record_count']
-                    response['user'] += new_response['user']
-                elif type(new_response) == ET.Element:
-                    for row in list(new_response):
-                        response.append(row)
-                elif raw:
-                    responses.append(new_response)
-
-            if raw:
-                return responses
+            response = self.__fetch_all__(url=url, args=args, raw=raw,
+                                          response=response, data_key='user')
         return response
 
 
@@ -179,41 +138,8 @@ class SubClientUsersLoans(Client):
 
         # make multiple api calls until all records are retrieved
         if all_records:
-            if raw:
-                responses = [response]
-                response = response.json()
-            args['offset'] = limit
-
-            # get total record count of query
-            if type(response) == dict:
-                total_records = int(response['total_record_count'])
-            elif type(response) == ET.Element:
-                total_records = int(response.attrib['total_record_count'])
-            else:
-                total_records = limit
-
-            records_retrieved = limit
-            while True:
-                if total_records <= records_retrieved:
-                    break
-
-                # make call and increment counter variables
-                new_response = self.fetch(url, args, raw=raw)
-                records_retrieved += limit
-                args['offset'] += limit
-
-                # append new records to initial response
-                if type(new_response) == dict:
-                    total_records = response['total_record_count']
-                    response['item_loan'] += new_response['item_loan']
-                elif type(new_response) == ET.Element:
-                    for row in list(new_response):
-                        response.append(row)
-                elif raw:
-                    responses.append(new_response)
-
-            if raw:
-                return responses
+            response = self.__fetch_all__(url=url, args=args, raw=raw,
+                                          response=response, data_key='item_loan')
         return response
 
 
@@ -268,41 +194,8 @@ class SubClientUsersRequests(Client):
 
         # make multiple api calls until all records are retrieved
         if all_records:
-            if raw:
-                responses = [response]
-                response = response.json()
-            args['offset'] = limit
-
-            # get total record count of query
-            if type(response) == dict:
-                total_records = int(response['total_record_count'])
-            elif type(response) == ET.Element:
-                total_records = int(response.attrib['total_record_count'])
-            else:
-                total_records = limit
-
-            records_retrieved = limit
-            while True:
-                if total_records <= records_retrieved:
-                    break
-
-                # make call and increment counter variables
-                new_response = self.fetch(url, args, raw=raw)
-                records_retrieved += limit
-                args['offset'] += limit
-
-                # append new records to initial response
-                if type(new_response) == dict:
-                    total_records = response['total_record_count']
-                    response['user_request'] += new_response['user_request']
-                elif type(new_response) == ET.Element:
-                    for row in list(new_response):
-                        response.append(row)
-                elif raw:
-                    responses.append(new_response)
-
-            if raw:
-                return responses
+            response = self.__fetch_all__(url=url, args=args, raw=raw,
+                                          response=response, data_key='user_request')
         return response
 
 
@@ -390,39 +283,6 @@ class SubClientUsersDeposits(Client):
 
         # make multiple api calls until all records are retrieved
         if all_records:
-            if raw:
-                responses = [response]
-                response = response.json()
-            args['offset'] = limit
-
-            # get total record count of query
-            if type(response) == dict:
-                total_records = int(response['total_record_count'])
-            elif type(response) == ET.Element:
-                total_records = int(response.attrib['total_record_count'])
-            else:
-                total_records = limit
-
-            records_retrieved = limit
-            while True:
-                if total_records <= records_retrieved:
-                    break
-
-                # make call and increment counter variables
-                new_response = self.fetch(url, args, raw=raw)
-                records_retrieved += limit
-                args['offset'] += limit
-
-                # append new records to initial response
-                if type(new_response) == dict:
-                    total_records = response['total_record_count']
-                    response['user_deposit'] += new_response['user_deposit']
-                elif type(new_response) == ET.Element:
-                    for row in list(new_response):
-                        response.append(row)
-                elif raw:
-                    responses.append(new_response)
-
-            if raw:
-                return responses
+            response = self.__fetch_all__(url=url, args=args, raw=raw,
+                                          response=response, data_key='user_deposit')
         return response

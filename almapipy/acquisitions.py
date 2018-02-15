@@ -71,41 +71,8 @@ class SubClientAcquistionsFunds(Client):
 
         # make multiple api calls until all records are retrieved
         if all_records:
-            if raw:
-                responses = [response]
-                response = response.json()
-            args['offset'] = limit
-
-            # get total record count of query
-            if type(response) == dict:
-                total_records = int(response['total_record_count'])
-            elif type(response) == ET.Element:
-                total_records = int(response.attrib['total_record_count'])
-            else:
-                total_records = limit
-
-            records_retrieved = limit
-            while True:
-                if total_records <= records_retrieved:
-                    break
-
-                # make call and increment counter variables
-                new_response = self.fetch(url, args, raw=raw)
-                records_retrieved += limit
-                args['offset'] += limit
-
-                # append new records to initial response
-                if type(new_response) == dict:
-                    total_records = response['total_record_count']
-                    response['fund'] += new_response['fund']
-                elif type(new_response) == ET.Element:
-                    for row in list(new_response):
-                        response.append(row)
-                elif raw:
-                    responses.append(new_response)
-
-            if raw:
-                return responses
+            response = self.__fetch_all__(url=url, args=args, raw=raw,
+                                          response=response, data_key='fund')
         return response
 
 
@@ -162,15 +129,7 @@ class SubClientAcquistionsPO(Client):
 
             # add search query if specified in desired format
             if query:
-                q_str = ""
-                i = 0
-                for field, filter_value in query.items():
-                    if i > 0:
-                        q_str += " AND "
-                    q_str += (field + "~")
-                    q_str += filter_value.replace(" ", "_")
-                    i += 1
-                args['q'] = q_str
+                args['q'] = self.__format_query__(query)
 
         response = self.fetch(url, args, raw=raw)
         if po_line_id:
@@ -178,41 +137,8 @@ class SubClientAcquistionsPO(Client):
 
         # make multiple api calls until all records are retrieved
         if all_records:
-            if raw:
-                responses = [response]
-                response = response.json()
-            args['offset'] = limit
-
-            # get total record count of query
-            if type(response) == dict:
-                total_records = int(response['total_record_count'])
-            elif type(response) == ET.Element:
-                total_records = int(response.attrib['total_record_count'])
-            else:
-                total_records = limit
-
-            records_retrieved = limit
-            while True:
-                if total_records <= records_retrieved:
-                    break
-
-                # make call and increment counter variables
-                new_response = self.fetch(url, args, raw=raw)
-                records_retrieved += limit
-                args['offset'] += limit
-
-                # append new records to initial response
-                if type(new_response) == dict:
-                    total_records = response['total_record_count']
-                    response['po_line'] += new_response['po_line']
-                elif type(new_response) == ET.Element:
-                    for row in list(new_response):
-                        response.append(row)
-                elif raw:
-                    responses.append(new_response)
-
-            if raw:
-                return responses
+            response = self.__fetch_all__(url=url, args=args, raw=raw,
+                                          response=response, data_key='po_line')
         return response
 
     def get_items(self, po_line_id, q_params={}, raw=False):
@@ -293,15 +219,7 @@ class SubClientAcquistionsVendors(Client):
 
             # add search query if specified in desired format
             if query:
-                q_str = ""
-                i = 0
-                for field, filter_value in query.items():
-                    if i > 0:
-                        q_str += " AND "
-                    q_str += (field + "~")
-                    q_str += filter_value.replace(" ", "_")
-                    i += 1
-                args['q'] = q_str
+                args['q'] = self.__format_query__(query)
 
         response = self.fetch(url, args, raw=raw)
         if vendor_id:
@@ -309,41 +227,8 @@ class SubClientAcquistionsVendors(Client):
 
         # make multiple api calls until all records are retrieved
         if all_records:
-            if raw:
-                responses = [response]
-                response = response.json()
-            args['offset'] = limit
-
-            # get total record count of query
-            if type(response) == dict:
-                total_records = int(response['total_record_count'])
-            elif type(response) == ET.Element:
-                total_records = int(response.attrib['total_record_count'])
-            else:
-                total_records = limit
-
-            records_retrieved = limit
-            while True:
-                if total_records <= records_retrieved:
-                    break
-
-                # make call and increment counter variables
-                new_response = self.fetch(url, args, raw=raw)
-                records_retrieved += limit
-                args['offset'] += limit
-
-                # append new records to initial response
-                if type(new_response) == dict:
-                    total_records = response['total_record_count']
-                    response['vendor'] += new_response['vendor']
-                elif type(new_response) == ET.Element:
-                    for row in list(new_response):
-                        response.append(row)
-                elif raw:
-                    responses.append(new_response)
-
-            if raw:
-                return responses
+            response = self.__fetch_all__(url=url, args=args, raw=raw,
+                                          response=response, data_key='vendor')
         return response
 
     def get_invoices(self, vendor_id, limit=10, offset=0, all_records=False,
@@ -386,41 +271,8 @@ class SubClientAcquistionsVendors(Client):
 
         # make multiple api calls until all records are retrieved
         if all_records:
-            if raw:
-                responses = [response]
-                response = response.json()
-            args['offset'] = limit
-
-            # get total record count of query
-            if type(response) == dict:
-                total_records = int(response['total_record_count'])
-            elif type(response) == ET.Element:
-                total_records = int(response.attrib['total_record_count'])
-            else:
-                total_records = limit
-
-            records_retrieved = limit
-            while True:
-                if total_records <= records_retrieved:
-                    break
-
-                # make call and increment counter variables
-                new_response = self.fetch(url, args, raw=raw)
-                records_retrieved += limit
-                args['offset'] += limit
-
-                # append new records to initial response
-                if type(new_response) == dict:
-                    total_records = response['total_record_count']
-                    response['invoice'] += new_response['invoice']
-                elif type(new_response) == ET.Element:
-                    for row in list(new_response):
-                        response.append(row)
-                elif raw:
-                    responses.append(new_response)
-
-            if raw:
-                return responses
+            response = self.__fetch_all__(url=url, args=args, raw=raw,
+                                          response=response, data_key='invoice')
         return response
 
     def get_po_lines(self, vendor_id, limit=10, offset=0, all_records=False,
@@ -463,41 +315,8 @@ class SubClientAcquistionsVendors(Client):
 
         # make multiple api calls until all records are retrieved
         if all_records:
-            if raw:
-                responses = [response]
-                response = response.json()
-            args['offset'] = limit
-
-            # get total record count of query
-            if type(response) == dict:
-                total_records = int(response['total_record_count'])
-            elif type(response) == ET.Element:
-                total_records = int(response.attrib['total_record_count'])
-            else:
-                total_records = limit
-
-            records_retrieved = limit
-            while True:
-                if total_records <= records_retrieved:
-                    break
-
-                # make call and increment counter variables
-                new_response = self.fetch(url, args, raw=raw)
-                records_retrieved += limit
-                args['offset'] += limit
-
-                # append new records to initial response
-                if type(new_response) == dict:
-                    total_records = response['total_record_count']
-                    response['po_line'] += new_response['po_line']
-                elif type(new_response) == ET.Element:
-                    for row in list(new_response):
-                        response.append(row)
-                elif raw:
-                    responses.append(new_response)
-
-            if raw:
-                return responses
+            response = self.__fetch_all__(url=url, args=args, raw=raw,
+                                          response=response, data_key='po_line')
         return response
 
 
@@ -551,15 +370,7 @@ class SubClientAcquistionsInvoices(Client):
 
             # add search query if specified in desired format
             if query:
-                q_str = ""
-                i = 0
-                for field, filter_value in query.items():
-                    if i > 0:
-                        q_str += " AND "
-                    q_str += (field + "~")
-                    q_str += filter_value.replace(" ", "_")
-                    i += 1
-                args['q'] = q_str
+                args['q'] = self.__format_query__(query)
 
         response = self.fetch(url, args, raw=raw)
         if invoice_id:
@@ -567,41 +378,8 @@ class SubClientAcquistionsInvoices(Client):
 
         # make multiple api calls until all records are retrieved
         if all_records:
-            if raw:
-                responses = [response]
-                response = response.json()
-            args['offset'] = limit
-
-            # get total record count of query
-            if type(response) == dict:
-                total_records = int(response['total_record_count'])
-            elif type(response) == ET.Element:
-                total_records = int(response.attrib['total_record_count'])
-            else:
-                total_records = limit
-
-            records_retrieved = limit
-            while True:
-                if total_records <= records_retrieved:
-                    break
-
-                # make call and increment counter variables
-                new_response = self.fetch(url, args, raw=raw)
-                records_retrieved += limit
-                args['offset'] += limit
-
-                # append new records to initial response
-                if type(new_response) == dict:
-                    total_records = response['total_record_count']
-                    response['invoice'] += new_response['invoice']
-                elif type(new_response) == ET.Element:
-                    for row in list(new_response):
-                        response.append(row)
-                elif raw:
-                    responses.append(new_response)
-
-            if raw:
-                return responses
+            response = self.__fetch_all__(url=url, args=args, raw=raw,
+                                          response=response, data_key='invoice')
         return response
 
 
@@ -660,15 +438,7 @@ class SubClientAcquistionsLicenses(Client):
 
             # add search query if specified in desired format
             if query:
-                q_str = ""
-                i = 0
-                for field, filter_value in query.items():
-                    if i > 0:
-                        q_str += " AND "
-                    q_str += (field + "~")
-                    q_str += filter_value.replace(" ", "_")
-                    i += 1
-                args['q'] = q_str
+                args['q'] = self.__format_query__(query)
 
         response = self.fetch(url, args, raw=raw)
         if license_id:
@@ -676,41 +446,8 @@ class SubClientAcquistionsLicenses(Client):
 
         # make multiple api calls until all records are retrieved
         if all_records:
-            if raw:
-                responses = [response]
-                response = response.json()
-            args['offset'] = limit
-
-            # get total record count of query
-            if type(response) == dict:
-                total_records = int(response['total_record_count'])
-            elif type(response) == ET.Element:
-                total_records = int(response.attrib['total_record_count'])
-            else:
-                total_records = limit
-
-            records_retrieved = limit
-            while True:
-                if total_records <= records_retrieved:
-                    break
-
-                # make call and increment counter variables
-                new_response = self.fetch(url, args, raw=raw)
-                records_retrieved += limit
-                args['offset'] += limit
-
-                # append new records to initial response
-                if type(new_response) == dict:
-                    total_records = response['total_record_count']
-                    response['license'] += new_response['license']
-                elif type(new_response) == ET.Element:
-                    for row in list(new_response):
-                        response.append(row)
-                elif raw:
-                    responses.append(new_response)
-
-            if raw:
-                return responses
+            response = self.__fetch_all__(url=url, args=args, raw=raw,
+                                          response=response, data_key='license')
         return response
 
     def get_amendments(self, license_id, amendment_id=None, q_params={}, raw=False):

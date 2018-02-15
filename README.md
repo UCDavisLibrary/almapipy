@@ -13,7 +13,7 @@ First stage is to develop read functionality around all the Alma APIs. Once comp
 | [bibs](#access-bibliographic-data) | X | | | |
 | [analytics](#access-reports) | X | NA | NA | NA |
 | [acquisitions](#access-acquisitions) | X | | | |
-| configuration | | | | |
+| [configuration](#access-configuration-settings) | X | | | |
 | [courses](#access-courses) | X | | | |
 | resource sharing partners | | | | |
 | task-lists | | | | |
@@ -138,7 +138,7 @@ alma.acq.licenses.get(limit = 100, all_records=True)
 Alma provides a set of Web services for handling Configuration related information, enabling you to quickly and easily receive configuration details. These Web services can be used by external systems in order to get list of possible data.
 ```python
 # Get libraries, locations, departments, and hours
-libraries = alma.conf.units.get_libaries(all_records=True)
+libraries = alma.conf.units.get_libaries()
 library_id = libraries['library'][0]['code']
 locations = alma.conf.units.get_locations(library_id)
 hours = alma.conf.general.get_hours(library_id)
