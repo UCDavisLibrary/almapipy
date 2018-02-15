@@ -15,7 +15,7 @@ First stage is to develop read functionality around all the Alma APIs. Once comp
 | [acquisitions](#access-acquisitions) | X | | | |
 | [configuration](#access-configuration-settings) | X | | | |
 | [courses](#access-courses) | X | | | |
-| resource sharing partners | | | | |
+| [resource sharing partners](#access-resource-sharing-partners) | X | | | |
 | task-lists | | | | |
 | [users](#access-users) | X | | | |
 | electronic | | | | |
@@ -71,8 +71,8 @@ report = alma.analytics.reports.get('path_to_report', return_json = True)
 ### Access Courses
 Alma provides a set of Web services for handling courses and reading lists related information, enabling you to quickly and easily manipulate their details. These Web services can be used by external systems such as Courses Management Systems to retrieve or update courses and reading lists related data.
 ```python
-# Get a complete list of courses in 1000 record increments
-course_list = alma.courses.get(limit = 1000, all_records = True)
+# Get a complete list of courses. Makes multiple calls if necessary.
+course_list = alma.courses.get(all_records = True)
 
 # or filter on search parameters
 econ_courses = alma.courses.get(query = {'code': 'ECN'})
@@ -99,9 +99,9 @@ users = alma.users.get(query = {'first_name': 'Sterling', 'last_name': 'Archer'}
 user_id = users['user'][0]['primary_id']
 alma.users.get(user_id)
 
-# get all loans or requests for a user in 100 record increments
-loans = alma.user.loans.get(user_id, limit = 100, all_records = True)
-requests = alma.user.requests.get(user_id, limit = 100, all_records = True)
+# get all loans or requests for a user. Makes multiple calls if necessary.
+loans = alma.user.loans.get(user_id, all_records = True)
+requests = alma.user.requests.get(user_id, all_records = True)
 
 # get deposits or fees for a user
 deposits = alma.users.deposits.get(user_id)
@@ -111,7 +111,7 @@ fees = alma.users.fees.get(user_id)
 Alma provides a set of Web services for handling acquisitions information, enabling you to quickly and easily manipulate acquisitions details. These Web services can be used by external systems - such as subscription agent systems - to retrieve or update acquisitions data.
 ```python
 # get all funds
-alma.acq.funds.get(limit = 100, all_records=True)
+alma.acq.funds.get(all_records=True)
 
 # get po_lines by search
 amazon_lines = alma.acq.po_lines.get(query={'vendor_account': 'AMAZON'})
@@ -132,7 +132,7 @@ alma.acq.vendors.get_po_lines('AMAZON.COM')
 alma.acq.invoices.get('invoice_id')
 
 # get all licenses
-alma.acq.licenses.get(limit = 100, all_records=True)
+alma.acq.licenses.get(all_records=True)
 ```
 ### Access Configuration Settings
 Alma provides a set of Web services for handling Configuration related information, enabling you to quickly and easily receive configuration details. These Web services can be used by external systems in order to get list of possible data.
@@ -163,6 +163,13 @@ depost_profiles = alma.conf.deposit_profiles.get()
 import_profiles = alma.conf.import_profiles.get()
 reminders = alma.conf.reminders.get()
 ```
+### Access Resource Sharing Partners
+Alma provides a set of Web services for handling Resource Sharing Partner information, enabling you to quickly and easily manipulate partner details. These Web services can be used by external systems to retrieve or update partner data.
+```python
+# get partners
+partners = alma.partners.get()
+```
 ## Attribution and Contact
+
 
 * **Author**: [Steve Pelkey](mailto:spelkey@ucdavis.edu)
