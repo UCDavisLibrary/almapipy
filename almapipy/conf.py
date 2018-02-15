@@ -28,6 +28,9 @@ class SubClientConfiguration(Client):
         self.general = SubClientConfigurationGeneral(self.cnxn_params)
         self.jobs = SubClientConfigurationJobs(self.cnxn_params)
         self.sets = SubClientConfigurationSets(self.cnxn_params)
+        self.deposit_profiles = SubClientConfigurationDeposit(self.cnxn_params)
+        self.import_profiles = SubClientConfigurationImport(self.cnxn_params)
+        self.reminders = SubClientConfigurationReminders(self.cnxn_params)
 
 
 class SubClientConfigurationUnits(Client):
@@ -535,6 +538,267 @@ class SubClientConfigurationSets(Client):
                 if type(new_response) == dict:
                     total_records = response['total_record_count']
                     response['member'] += new_response['member']
+                elif type(new_response) == ET.Element:
+                    for row in list(new_response):
+                        response.append(row)
+                elif raw:
+                    responses.append(new_response)
+
+            if raw:
+                return responses
+        return response
+
+
+class SubClientConfigurationDeposit(Client):
+    """Handles the Deposit profiles endpoints of Configurations API"""
+
+    def __init__(self, cnxn_params={}):
+        self.cnxn_params = cnxn_params.copy()
+        self.cnxn_params['api_uri'] += '/deposit-profiles'
+        self.cnxn_params['api_uri_full'] += '/deposit-profiles'
+
+    def get(self, deposit_profile_id=None, limit=10, offset=0, all_records=False,
+            q_params={}, raw=False):
+        """Retrieves list of deposit profiles or specific profile
+
+        Args:
+            deposit_profile_id (str): A unique identifier of the deposit profile.
+            limit (int): Limits the number of results.
+                Valid values are 0-100.
+            offset (int): The row number to start with.
+            all_records (bool): Return all rows returned by query.
+                Otherwise returns number specified by limit.
+            q_params (dict): Any additional query parameters.
+            raw (bool): If true, returns raw requests object.
+
+        Returns:
+            List of deposit profiles or specific profile.
+
+        """
+        args = q_params.copy()
+        args['apikey'] = self.cnxn_params['api_key']
+
+        url = self.cnxn_params['api_uri_full']
+        if deposit_profile_id:
+            url += ("/" + str(deposit_profile_id))
+
+        if int(limit) > 100:
+            limit = 100
+        elif int(limit) < 1:
+            limit = 1
+        else:
+            limit = int(limit)
+        args['limit'] = limit
+        args['offset'] = int(offset)
+
+        response = self.fetch(url, args, raw=raw)
+
+        if deposit_profile_id:
+            return response
+
+        # make multiple api calls until all records are retrieved
+        if all_records:
+            if raw:
+                responses = [response]
+                response = response.json()
+            args['offset'] = limit
+
+            # get total record count of query
+            if type(response) == dict:
+                total_records = int(response['total_record_count'])
+            elif type(response) == ET.Element:
+                total_records = int(response.attrib['total_record_count'])
+            else:
+                total_records = limit
+
+            records_retrieved = limit
+            while True:
+                if total_records <= records_retrieved:
+                    break
+
+                # make call and increment counter variables
+                new_response = self.fetch(url, args, raw=raw)
+                records_retrieved += limit
+                args['offset'] += limit
+
+                # append new records to initial response
+                if type(new_response) == dict:
+                    total_records = response['total_record_count']
+                    response['deposit_profile'] += new_response['deposit_profile']
+                elif type(new_response) == ET.Element:
+                    for row in list(new_response):
+                        response.append(row)
+                elif raw:
+                    responses.append(new_response)
+
+            if raw:
+                return responses
+        return response
+
+
+class SubClientConfigurationImport(Client):
+    """Handles the Import profiles endpoints of Configurations API"""
+
+    def __init__(self, cnxn_params={}):
+        self.cnxn_params = cnxn_params.copy()
+        self.cnxn_params['api_uri'] += '/md-import-profiles'
+        self.cnxn_params['api_uri_full'] += '/md-import-profiles'
+
+    def get(self, profile_id=None, limit=10, offset=0, all_records=False,
+            q_params={}, raw=False):
+        """Retrieves list of import profiles or specific profile
+
+        Args:
+            profile_id (str): A unique identifier of the import profile.
+            limit (int): Limits the number of results.
+                Valid values are 0-100.
+            offset (int): The row number to start with.
+            all_records (bool): Return all rows returned by query.
+                Otherwise returns number specified by limit.
+            q_params (dict): Any additional query parameters.
+            raw (bool): If true, returns raw requests object.
+
+        Returns:
+            List of import profiles or specific profile.
+
+        """
+        args = q_params.copy()
+        args['apikey'] = self.cnxn_params['api_key']
+
+        url = self.cnxn_params['api_uri_full']
+        if profile_id:
+            url += ("/" + str(profile_id))
+
+        if int(limit) > 100:
+            limit = 100
+        elif int(limit) < 1:
+            limit = 1
+        else:
+            limit = int(limit)
+        args['limit'] = limit
+        args['offset'] = int(offset)
+
+        response = self.fetch(url, args, raw=raw)
+
+        if profile_id:
+            return response
+
+        # make multiple api calls until all records are retrieved
+        if all_records:
+            if raw:
+                responses = [response]
+                response = response.json()
+            args['offset'] = limit
+
+            # get total record count of query
+            if type(response) == dict:
+                total_records = int(response['total_record_count'])
+            elif type(response) == ET.Element:
+                total_records = int(response.attrib['total_record_count'])
+            else:
+                total_records = limit
+
+            records_retrieved = limit
+            while True:
+                if total_records <= records_retrieved:
+                    break
+
+                # make call and increment counter variables
+                new_response = self.fetch(url, args, raw=raw)
+                records_retrieved += limit
+                args['offset'] += limit
+
+                # append new records to initial response
+                if type(new_response) == dict:
+                    total_records = response['total_record_count']
+                    response['import_profile'] += new_response['import_profile']
+                elif type(new_response) == ET.Element:
+                    for row in list(new_response):
+                        response.append(row)
+                elif raw:
+                    responses.append(new_response)
+
+            if raw:
+                return responses
+        return response
+
+
+class SubClientConfigurationReminders(Client):
+    """Handles the Reminder endpoints of Configurations API"""
+
+    def __init__(self, cnxn_params={}):
+        self.cnxn_params = cnxn_params.copy()
+        self.cnxn_params['api_uri'] += '/reminders'
+        self.cnxn_params['api_uri_full'] += '/reminders'
+
+    def get(self, reminder_id=None, limit=10, offset=0, all_records=False,
+            q_params={}, raw=False):
+        """Retrieves list of reminders or specific reminder.
+
+        Args:
+            reminder_id (str): A unique identifier of the reminder.
+            limit (int): Limits the number of results.
+                Valid values are 0-100.
+            offset (int): The row number to start with.
+            all_records (bool): Return all rows returned by query.
+                Otherwise returns number specified by limit.
+            q_params (dict): Any additional query parameters.
+            raw (bool): If true, returns raw requests object.
+
+        Returns:
+            List of reminders or specific reminder.
+
+        """
+        args = q_params.copy()
+        args['apikey'] = self.cnxn_params['api_key']
+
+        url = self.cnxn_params['api_uri_full']
+        if reminder_id:
+            url += ("/" + str(reminder_id))
+
+        if int(limit) > 100:
+            limit = 100
+        elif int(limit) < 1:
+            limit = 1
+        else:
+            limit = int(limit)
+        args['limit'] = limit
+        args['offset'] = int(offset)
+
+        response = self.fetch(url, args, raw=raw)
+
+        if reminder_id:
+            return response
+
+        # make multiple api calls until all records are retrieved
+        if all_records:
+            if raw:
+                responses = [response]
+                response = response.json()
+            args['offset'] = limit
+
+            # get total record count of query
+            if type(response) == dict:
+                total_records = int(response['total_record_count'])
+            elif type(response) == ET.Element:
+                total_records = int(response.attrib['total_record_count'])
+            else:
+                total_records = limit
+
+            records_retrieved = limit
+            while True:
+                if total_records <= records_retrieved:
+                    break
+
+                # make call and increment counter variables
+                new_response = self.fetch(url, args, raw=raw)
+                records_retrieved += limit
+                args['offset'] += limit
+
+                # append new records to initial response
+                if type(new_response) == dict:
+                    total_records = response['total_record_count']
+                    response['reminder'] += new_response['reminder']
                 elif type(new_response) == ET.Element:
                     for row in list(new_response):
                         response.append(row)

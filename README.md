@@ -56,12 +56,12 @@ alma.bibs.linked_data.get(harry_potter)
 ```
 
 ### Access Reports
-The Analytics API returns an Alma report (in XML format only).
+The Analytics API returns an Alma report.
 ```python
 # Find the system path to the report if don't know path
 alma.analytics.paths.get('/shared')
 
-# retrieve the report as an XML ET element
+# retrieve the report as an XML ET element (native response)
 report = alma.analytics.reports.get('path_to_report')
 
 # or convert the xml to json after API call
@@ -133,6 +133,35 @@ alma.acq.invoices.get('invoice_id')
 
 # get all licenses
 alma.acq.licenses.get(limit = 100, all_records=True)
+```
+### Access Configuration Settings
+Alma provides a set of Web services for handling Configuration related information, enabling you to quickly and easily receive configuration details. These Web services can be used by external systems in order to get list of possible data.
+```python
+# Get libraries, locations, departments, and hours
+libraries = alma.conf.units.get_libaries(all_records=True)
+library_id = libraries['library'][0]['code']
+locations = alma.conf.units.get_locations(library_id)
+hours = alma.conf.general.get_hours(library_id)
+departments = alma.conf.units.get_departments()
+
+# Get system code tables
+table = 'UserGroups'
+alma.conf.general.get_code_table(table)
+
+# Get scheduled jobs and run history
+jobs = alma.conf.jobs.get()
+job_id = jobs['job'][0]['id']
+run_history = alma.conf.jobs.get_instances(job_id)
+
+# Get sets and set members
+sets = alma.conf.sets.get()
+set_id = sets['set'][0]['id']
+set_members = alma.conf.sets.get_members(set_id)
+
+# get profiles and reminders
+depost_profiles = alma.conf.deposit_profiles.get()
+import_profiles = alma.conf.import_profiles.get()
+reminders = alma.conf.reminders.get()
 ```
 ## Attribution and Contact
 
