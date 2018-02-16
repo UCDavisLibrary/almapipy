@@ -15,6 +15,7 @@ from .acquisitions import SubClientAcquistions
 from .conf import SubClientConfiguration
 from .partners import SubClientPartners
 from .electronic import SubClientElectronic
+from .task_lists import SubClientTaskList
 from . import utils
 
 
@@ -74,6 +75,7 @@ class AlmaCnxn(Client):
         self.conf = SubClientConfiguration(self.cnxn_params)
         self.partners = SubClientPartners(self.cnxn_params)
         self.electronic = SubClientElectronic(self.cnxn_params)
+        self.task_lists = SubClientTaskList(self.cnxn_params)
 
     def __validate_key__(self, apikey):
         # loop through each api and access the /test endpoint.

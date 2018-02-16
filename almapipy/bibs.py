@@ -175,12 +175,16 @@ class SubClientBibsCollections(Client):
         self.cnxn_params['api_uri'] += '/collections'
         self.cnxn_params['api_uri_full'] += '/collections'
 
-    def get(self, pid=None, q_params={}, raw=False):
+    def get(self, pid=None, query={}, q_params={}, raw=False):
         """Returns meta data about collections in libraries.
             If pid argument is used, will only return one collection.
 
         Args:
             pid (str): The collection ID.
+            query (dict): Search query for filtering list. Optional.
+                Searching for words from fields: [library, collection name, external system, external ID].
+                Only AND operator is supported for multiple filters.
+                Format {'field': 'value', 'field2', 'value2'}.
             q_params (dict): Any additional query parameters.
             raw (bool): If true, returns raw requests object.
 
@@ -195,7 +199,11 @@ class SubClientBibsCollections(Client):
         args = q_params.copy()
         args['apikey'] = self.cnxn_params['api_key']
 
-        return self.fetch(url, args, raw=raw)
+        if query:
+            args['q'] = self.__format_query__(query)
+
+        response = self.fetch(url, args, raw=raw)
+        return response
 
     def get_bibs(self, pid, q_params={}, raw=False):
         """Get bibs in a collection using pid.
