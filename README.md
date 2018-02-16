@@ -18,7 +18,7 @@ First stage is to develop read functionality around all the Alma APIs. Once comp
 | [resource sharing partners](#access-resource-sharing-partners) | X | | | |
 | task-lists | | | | |
 | [users](#access-users) | X | | | |
-| electronic | | | | |
+| [electronic](#electronic) | X | | | |
 
 ## Use
 
@@ -168,6 +168,21 @@ Alma provides a set of Web services for handling Resource Sharing Partner inform
 ```python
 # get partners
 partners = alma.partners.get()
+```
+### Electronic
+Alma provides a set of Web services for handling electronic information, enabling you to quickly and easily manipulate electronic details. These Web services can be used by external systems in order to retrieve or update electronic data.
+```python
+# get e-collections
+collections = alma.electronic.collections.get()
+collection_id = collections['electronic_collection'][0]['id']
+
+# get services for a collection
+services = alma.electronic.services.get(collection_id)
+service_id = services['electronic_service'][0]['id']
+
+# get portfolios for a service
+alma.electronic.portfolios.get(collection_id, service_id)
+
 ```
 ## Attribution and Contact
 

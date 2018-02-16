@@ -13,6 +13,8 @@ from .courses import SubClientCourses
 from .users import SubClientUsers
 from .acquisitions import SubClientAcquistions
 from .conf import SubClientConfiguration
+from .partners import SubClientPartners
+from .electronic import SubClientElectronic
 from . import utils
 
 
@@ -23,8 +25,8 @@ class AlmaCnxn(Client):
     at https://developers.exlibrisgroup.com/alma/apis.
 
     E.g.
-    > connection = AlmaCnxn(your_api_key)
-    > connection.bibs.catalog.get_record(bib_id) # returns bibliographic records
+    > alma = AlmaCnxn(your_api_key)
+    > alma.bibs.catalog.get_record(bib_id) # returns bibliographic records
 
     Args:
         api_key (str): Your Api Key
@@ -70,6 +72,8 @@ class AlmaCnxn(Client):
         self.users = SubClientUsers(self.cnxn_params)
         self.acq = SubClientAcquistions(self.cnxn_params)
         self.conf = SubClientConfiguration(self.cnxn_params)
+        self.partners = SubClientPartners(self.cnxn_params)
+        self.electronic = SubClientElectronic(self.cnxn_params)
 
     def __validate_key__(self, apikey):
         # loop through each api and access the /test endpoint.
