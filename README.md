@@ -16,9 +16,9 @@ First stage is to develop read functionality around all the Alma APIs. Once comp
 | [configuration](#access-configuration-settings) | X | | | |
 | [courses](#access-courses) | X | | | |
 | [resource sharing partners](#access-resource-sharing-partners) | X | | | |
-| task-lists | | | | |
+| [task-lists](#access-task-lists) | X | | | |
 | [users](#access-users) | X | | | |
-| [electronic](#electronic) | X | | | |
+| [electronic](#access-electronic) | X | | | |
 
 ## Use
 
@@ -169,7 +169,7 @@ Alma provides a set of Web services for handling Resource Sharing Partner inform
 # get partners
 partners = alma.partners.get()
 ```
-### Electronic
+### Access Electronic
 Alma provides a set of Web services for handling electronic information, enabling you to quickly and easily manipulate electronic details. These Web services can be used by external systems in order to retrieve or update electronic data.
 ```python
 # get e-collections
@@ -184,6 +184,17 @@ service_id = services['electronic_service'][0]['id']
 alma.electronic.portfolios.get(collection_id, service_id)
 
 ```
+### Access Task Lists
+Alma provides a set of Web services for handling task lists information, enabling you to quickly and easily manipulate their details. These Web services can be used by external systems.
+```python
+# get requested resources for a specific circulation desk
+alma.task_lists.requested_resources.get(library_id, circ_desk)
+
+# get lending requests for a specific library
+alma.task_lists.lending_requests.get(library_id)
+
+```
+
 ## Attribution and Contact
 
 
