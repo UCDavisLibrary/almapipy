@@ -21,8 +21,8 @@ class SubClientTaskList(Client):
         self.cnxn_params['api_uri_full'] += self.cnxn_params['api_uri']
 
         # Hook in subclients of api
-        self.requested_resources = SubClientTaskListResources(self.cnxn_params)
-        self.lending_requests = SubClientTaskListLending(self.cnxn_params)
+        self.resources = SubClientTaskListResources(self.cnxn_params)
+        self.lending = SubClientTaskListLending(self.cnxn_params)
 
 
 class SubClientTaskListResources(Client):
@@ -70,13 +70,13 @@ class SubClientTaskListResources(Client):
         args['library'] = str(library_id)
         args['circ_desk'] = str(circ_desk)
 
-        response = self.fetch(url, args, raw=raw)
+        response = self.read(url, args, raw=raw)
 
         # make multiple api calls until all records are retrieved
         if all_records:
-            response = self.__fetch_all__(url=url, args=args,
-                                          raw=raw, response=response,
-                                          data_key='requested_resource')
+            response = self.__read_all__(url=url, args=args,
+                                         raw=raw, response=response,
+                                         data_key='requested_resource')
         return response
 
 
@@ -107,6 +107,6 @@ class SubClientTaskListLending(Client):
 
         url = self.cnxn_params['api_uri_full']
 
-        response = self.fetch(url, args, raw=raw)
+        response = self.read(url, args, raw=raw)
 
         return response

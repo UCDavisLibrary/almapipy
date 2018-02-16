@@ -74,14 +74,14 @@ class SubClientUsers(Client):
             if query:
                 args['q'] = self.__format_query__(query)
 
-        response = self.fetch(url, args, raw=raw)
+        response = self.read(url, args, raw=raw)
         if user_id:
             return response
 
         # make multiple api calls until all records are retrieved
         if all_records:
-            response = self.__fetch_all__(url=url, args=args, raw=raw,
-                                          response=response, data_key='user')
+            response = self.__read_all__(url=url, args=args, raw=raw,
+                                         response=response, data_key='user')
         return response
 
 
@@ -130,14 +130,14 @@ class SubClientUsersLoans(Client):
             args['limit'] = limit
             args['offset'] = int(offset)
 
-        response = self.fetch(url, args, raw=raw)
+        response = self.read(url, args, raw=raw)
         if loan_id:
             return response
 
         # make multiple api calls until all records are retrieved
         if all_records:
-            response = self.__fetch_all__(url=url, args=args, raw=raw,
-                                          response=response, data_key='item_loan')
+            response = self.__read_all__(url=url, args=args, raw=raw,
+                                         response=response, data_key='item_loan')
         return response
 
 
@@ -186,14 +186,14 @@ class SubClientUsersRequests(Client):
             args['limit'] = limit
             args['offset'] = int(offset)
 
-        response = self.fetch(url, args, raw=raw)
+        response = self.read(url, args, raw=raw)
         if request_id:
             return response
 
         # make multiple api calls until all records are retrieved
         if all_records:
-            response = self.__fetch_all__(url=url, args=args, raw=raw,
-                                          response=response, data_key='user_request')
+            response = self.__read_all__(url=url, args=args, raw=raw,
+                                         response=response, data_key='user_request')
         return response
 
 
@@ -227,7 +227,7 @@ class SubClientUsersFees(Client):
         args = q_params.copy()
         args['apikey'] = self.cnxn_params['api_key']
 
-        return self.fetch(url, args, raw=raw)
+        return self.read(url, args, raw=raw)
 
 
 class SubClientUsersDeposits(Client):
@@ -275,12 +275,12 @@ class SubClientUsersDeposits(Client):
             args['limit'] = limit
             args['offset'] = int(offset)
 
-        response = self.fetch(url, args, raw=raw)
+        response = self.read(url, args, raw=raw)
         if deposit_id:
             return response
 
         # make multiple api calls until all records are retrieved
         if all_records:
-            response = self.__fetch_all__(url=url, args=args, raw=raw,
-                                          response=response, data_key='user_deposit')
+            response = self.__read_all__(url=url, args=args, raw=raw,
+                                         response=response, data_key='user_deposit')
         return response

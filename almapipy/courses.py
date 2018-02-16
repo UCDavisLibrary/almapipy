@@ -73,14 +73,14 @@ class SubClientCourses(Client):
             if query:
                 args['q'] = self.__format_query__(query)
 
-        response = self.fetch(url, args, raw=raw)
+        response = self.read(url, args, raw=raw)
         if course_id:
             return response
 
         # make multiple api calls until all records are retrieved
         if all_records:
-            response = self.__fetch_all__(url=url, args=args, raw=raw,
-                                          response=response, data_key='course')
+            response = self.__read_all__(url=url, args=args, raw=raw,
+                                         response=response, data_key='course')
         return response
 
 
@@ -120,7 +120,7 @@ class SubClientCoursesReadingLists(Client):
                 raise utils.ArgError(message)
             args['view'] = view
 
-        return self.fetch(url, args, raw=raw)
+        return self.read(url, args, raw=raw)
 
 
 class SubClientCoursesCitations(Client):
@@ -157,7 +157,7 @@ class SubClientCoursesCitations(Client):
         if citation_id:
             url += ('/' + str(citation_id))
 
-        return self.fetch(url, args, raw=raw)
+        return self.read(url, args, raw=raw)
 
 
 class SubClientCoursesOwners(Client):
@@ -194,7 +194,7 @@ class SubClientCoursesOwners(Client):
         if owner_id:
             url += ('/' + str(owner_id))
 
-        return self.fetch(url, args, raw=raw)
+        return self.read(url, args, raw=raw)
 
 
 class SubClientCoursesTags(Client):
@@ -228,4 +228,4 @@ class SubClientCoursesTags(Client):
         url += '/citations'
         url += ('/' + str(citation_id) + "/tags")
 
-        return self.fetch(url, args, raw=raw)
+        return self.read(url, args, raw=raw)

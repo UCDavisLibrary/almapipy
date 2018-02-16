@@ -6,7 +6,8 @@ almapipy is python requests wrapper for easily accessing the Ex Libris Alma API.
 Version 1.0.0 currently under development. Not available through pip yet.
 
 ## Progress and Roadmap
-First stage is to develop read functionality around all the Alma APIs. Once completed, Post, Put and Delete will follow.
+Get functionality has been developed around all the Alma APIs (listed below).
+Post, Put and Delete functions will be gradually added in future releases.
 
 | API | Get | Post | Put | Delete |
 | --- | :---: | :---: | :---: | :---: |
@@ -188,10 +189,10 @@ alma.electronic.portfolios.get(collection_id, service_id)
 Alma provides a set of Web services for handling task lists information, enabling you to quickly and easily manipulate their details. These Web services can be used by external systems.
 ```python
 # get requested resources for a specific circulation desk
-alma.task_lists.requested_resources.get(library_id, circ_desk)
+alma.task_lists.resources.get(library_id, circ_desk)
 
 # get lending requests for a specific library
-alma.task_lists.lending_requests.get(library_id)
+alma.task_lists.lending.get(library_id)
 
 ```
 

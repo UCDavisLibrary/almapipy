@@ -12,14 +12,14 @@ from . import utils
 
 class Client(object):
     """
-    Fetches responses from Alma API and handles response.
+    Reads responses from Alma API and handles response.
     """
 
     def __init__(self, cnxn_params={}):
         # instantiate dictionary for storing alma api connection parameters
         self.cnxn_params = cnxn_params
 
-    def fetch(self, url, args, raw=False):
+    def read(self, url, args, raw=False):
         """
         Uses requests library to makes Exlibris API call.
         Parses XML into python.
@@ -122,7 +122,7 @@ class Client(object):
 
         return q_str
 
-    def __fetch_all__(self, url, args, raw, response, data_key, max_limit=100):
+    def __read_all__(self, url, args, raw, response, data_key, max_limit=100):
         """Makes multiple API calls until all records for a query are retrieved.
             Called by the 'all_records' parameter.
 
@@ -164,7 +164,7 @@ class Client(object):
                 break
 
             # make call and increment counter variables
-            new_response = self.fetch(url, args, raw=raw)
+            new_response = self.read(url, args, raw=raw)
             records_retrieved += limit
             args['offset'] += limit
 

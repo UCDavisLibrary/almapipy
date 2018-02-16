@@ -58,15 +58,15 @@ class SubClientPartners(Client):
         args['limit'] = limit
         args['offset'] = int(offset)
 
-        response = self.fetch(url, args, raw=raw)
+        response = self.read(url, args, raw=raw)
 
         if partner_id:
             return response
 
         # make multiple api calls until all records are retrieved
         if all_records:
-            response = self.__fetch_all__(url=url, args=args, raw=raw,
-                                          response=response, data_key='partner')
+            response = self.__read_all__(url=url, args=args, raw=raw,
+                                         response=response, data_key='partner')
         return response
 
 
@@ -96,5 +96,5 @@ class SubClientPartnersLending(Client):
         url += ("/" + str(partner_id) + "/lending-requests")
         url += ("/" + str(request_id))
 
-        response = self.fetch(url, args, raw=raw)
+        response = self.read(url, args, raw=raw)
         return response

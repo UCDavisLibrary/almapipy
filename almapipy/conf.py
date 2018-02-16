@@ -57,7 +57,7 @@ class SubClientConfigurationUnits(Client):
         if library_id:
             url += ("/" + str(library_id))
 
-        response = self.fetch(url, args, raw=raw)
+        response = self.read(url, args, raw=raw)
         return response
 
     def get_locations(self, library_id, location_id=None, q_params={}, raw=False):
@@ -81,7 +81,7 @@ class SubClientConfigurationUnits(Client):
         if location_id:
             url += ("/" + str(location_id))
 
-        response = self.fetch(url, args, raw=raw)
+        response = self.read(url, args, raw=raw)
         return response
 
     def get_departments(self, q_params={}, raw=False):
@@ -101,7 +101,7 @@ class SubClientConfigurationUnits(Client):
         url = self.cnxn_params['api_uri_full']
         url += '/departments'
 
-        response = self.fetch(url, args, raw=raw)
+        response = self.read(url, args, raw=raw)
         return response
 
 
@@ -129,7 +129,7 @@ class SubClientConfigurationGeneral(Client):
         url = self.cnxn_params['api_uri_full']
         url += "/general"
 
-        response = self.fetch(url, args, raw=raw)
+        response = self.read(url, args, raw=raw)
         return response
 
     def get_hours(self, library_id=None, q_params={}, raw=False):
@@ -160,7 +160,7 @@ class SubClientConfigurationGeneral(Client):
 
         url += '/open-hours'
 
-        response = self.fetch(url, args, raw=raw)
+        response = self.read(url, args, raw=raw)
         return response
 
     def get_code_table(self, table_name, q_params={}, raw=False):
@@ -186,7 +186,7 @@ class SubClientConfigurationGeneral(Client):
         url = self.cnxn_params['api_uri_full']
         url += ('/code-tables/' + str(table_name))
 
-        response = self.fetch(url, args, raw=raw)
+        response = self.read(url, args, raw=raw)
         return response
 
 
@@ -234,15 +234,15 @@ class SubClientConfigurationJobs(Client):
             args['limit'] = limit
             args['offset'] = int(offset)
 
-        response = self.fetch(url, args, raw=raw)
+        response = self.read(url, args, raw=raw)
 
         if job_id:
             return response
 
         # make multiple api calls until all records are retrieved
         if all_records:
-            response = self.__fetch_all__(url=url, args=args, raw=raw,
-                                          response=response, data_key='job')
+            response = self.__read_all__(url=url, args=args, raw=raw,
+                                         response=response, data_key='job')
         return response
 
     def get_instances(self, job_id, instance_id=None, limit=10, offset=0,
@@ -283,15 +283,15 @@ class SubClientConfigurationJobs(Client):
             args['limit'] = limit
             args['offset'] = int(offset)
 
-        response = self.fetch(url, args, raw=raw)
+        response = self.read(url, args, raw=raw)
 
         if instance_id:
             return response
 
         # make multiple api calls until all records are retrieved
         if all_records:
-            response = self.__fetch_all__(url=url, args=args, raw=raw,
-                                          response=response, data_key='job_instance')
+            response = self.__read_all__(url=url, args=args, raw=raw,
+                                         response=response, data_key='job_instance')
         return response
 
 
@@ -354,14 +354,14 @@ class SubClientConfigurationSets(Client):
             # add search query if specified in desired format
             if query:
                 args['q'] = self.__format_query__(query)
-        response = self.fetch(url, args, raw=raw)
+        response = self.read(url, args, raw=raw)
         if set_id:
             return response
 
         # make multiple api calls until all records are retrieved
         if all_records:
-            response = self.__fetch_all__(url=url, args=args, raw=raw,
-                                          response=response, data_key='set')
+            response = self.__read_all__(url=url, args=args, raw=raw,
+                                         response=response, data_key='set')
         return response
 
     def get_members(self, set_id, limit=10, offset=0, all_records=False,
@@ -397,12 +397,12 @@ class SubClientConfigurationSets(Client):
         args['limit'] = limit
         args['offset'] = int(offset)
 
-        response = self.fetch(url, args, raw=raw)
+        response = self.read(url, args, raw=raw)
 
         # make multiple api calls until all records are retrieved
         if all_records:
-            response = self.__fetch_all__(url=url, args=args, raw=raw,
-                                          response=response, data_key='member')
+            response = self.__read_all__(url=url, args=args, raw=raw,
+                                         response=response, data_key='member')
         return response
 
 
@@ -448,15 +448,15 @@ class SubClientConfigurationDeposit(Client):
         args['limit'] = limit
         args['offset'] = int(offset)
 
-        response = self.fetch(url, args, raw=raw)
+        response = self.read(url, args, raw=raw)
 
         if deposit_profile_id:
             return response
 
         # make multiple api calls until all records are retrieved
         if all_records:
-            response = self.__fetch_all__(url=url, args=args, raw=raw,
-                                          response=response, data_key='deposit_profile')
+            response = self.__read_all__(url=url, args=args, raw=raw,
+                                         response=response, data_key='deposit_profile')
 
 
 class SubClientConfigurationImport(Client):
@@ -501,15 +501,15 @@ class SubClientConfigurationImport(Client):
         args['limit'] = limit
         args['offset'] = int(offset)
 
-        response = self.fetch(url, args, raw=raw)
+        response = self.read(url, args, raw=raw)
 
         if profile_id:
             return response
 
         # make multiple api calls until all records are retrieved
         if all_records:
-            response = self.__fetch_all__(url=url, args=args, raw=raw,
-                                          response=response, data_key='import_profile')
+            response = self.__read_all__(url=url, args=args, raw=raw,
+                                         response=response, data_key='import_profile')
         return response
 
 
@@ -555,13 +555,13 @@ class SubClientConfigurationReminders(Client):
         args['limit'] = limit
         args['offset'] = int(offset)
 
-        response = self.fetch(url, args, raw=raw)
+        response = self.read(url, args, raw=raw)
 
         if reminder_id:
             return response
 
         # make multiple api calls until all records are retrieved
         if all_records:
-            response = self.__fetch_all__(url=url, args=args, raw=raw,
-                                          response=response, data_key='reminder')
+            response = self.__read_all__(url=url, args=args, raw=raw,
+                                         response=response, data_key='reminder')
         return response

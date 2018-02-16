@@ -65,12 +65,12 @@ class SubClientAcquistionsFunds(Client):
         if library:
             args['library'] = str(library)
 
-        response = self.fetch(url, args, raw=raw)
+        response = self.read(url, args, raw=raw)
 
         # make multiple api calls until all records are retrieved
         if all_records:
-            response = self.__fetch_all__(url=url, args=args, raw=raw,
-                                          response=response, data_key='fund')
+            response = self.__read_all__(url=url, args=args, raw=raw,
+                                         response=response, data_key='fund')
         return response
 
 
@@ -129,14 +129,14 @@ class SubClientAcquistionsPO(Client):
             if query:
                 args['q'] = self.__format_query__(query)
 
-        response = self.fetch(url, args, raw=raw)
+        response = self.read(url, args, raw=raw)
         if po_line_id:
             return response
 
         # make multiple api calls until all records are retrieved
         if all_records:
-            response = self.__fetch_all__(url=url, args=args, raw=raw,
-                                          response=response, data_key='po_line')
+            response = self.__read_all__(url=url, args=args, raw=raw,
+                                         response=response, data_key='po_line')
         return response
 
     def get_items(self, po_line_id, q_params={}, raw=False):
@@ -157,7 +157,7 @@ class SubClientAcquistionsPO(Client):
         url = self.cnxn_params['api_uri_full']
         url += ("/" + str(po_line_id) + "/items")
 
-        response = self.fetch(url, args, raw=raw)
+        response = self.read(url, args, raw=raw)
         return response
 
 
@@ -219,14 +219,14 @@ class SubClientAcquistionsVendors(Client):
             if query:
                 args['q'] = self.__format_query__(query)
 
-        response = self.fetch(url, args, raw=raw)
+        response = self.read(url, args, raw=raw)
         if vendor_id:
             return response
 
         # make multiple api calls until all records are retrieved
         if all_records:
-            response = self.__fetch_all__(url=url, args=args, raw=raw,
-                                          response=response, data_key='vendor')
+            response = self.__read_all__(url=url, args=args, raw=raw,
+                                         response=response, data_key='vendor')
         return response
 
     def get_invoices(self, vendor_id, limit=10, offset=0, all_records=False,
@@ -265,12 +265,12 @@ class SubClientAcquistionsVendors(Client):
         args['limit'] = limit
         args['offset'] = int(offset)
 
-        response = self.fetch(url, args, raw=raw)
+        response = self.read(url, args, raw=raw)
 
         # make multiple api calls until all records are retrieved
         if all_records:
-            response = self.__fetch_all__(url=url, args=args, raw=raw,
-                                          response=response, data_key='invoice')
+            response = self.__read_all__(url=url, args=args, raw=raw,
+                                         response=response, data_key='invoice')
         return response
 
     def get_po_lines(self, vendor_id, limit=10, offset=0, all_records=False,
@@ -309,12 +309,12 @@ class SubClientAcquistionsVendors(Client):
         args['limit'] = limit
         args['offset'] = int(offset)
 
-        response = self.fetch(url, args, raw=raw)
+        response = self.read(url, args, raw=raw)
 
         # make multiple api calls until all records are retrieved
         if all_records:
-            response = self.__fetch_all__(url=url, args=args, raw=raw,
-                                          response=response, data_key='po_line')
+            response = self.__read_all__(url=url, args=args, raw=raw,
+                                         response=response, data_key='po_line')
         return response
 
 
@@ -370,14 +370,14 @@ class SubClientAcquistionsInvoices(Client):
             if query:
                 args['q'] = self.__format_query__(query)
 
-        response = self.fetch(url, args, raw=raw)
+        response = self.read(url, args, raw=raw)
         if invoice_id:
             return response
 
         # make multiple api calls until all records are retrieved
         if all_records:
-            response = self.__fetch_all__(url=url, args=args, raw=raw,
-                                          response=response, data_key='invoice')
+            response = self.__read_all__(url=url, args=args, raw=raw,
+                                         response=response, data_key='invoice')
         return response
 
 
@@ -438,14 +438,14 @@ class SubClientAcquistionsLicenses(Client):
             if query:
                 args['q'] = self.__format_query__(query)
 
-        response = self.fetch(url, args, raw=raw)
+        response = self.read(url, args, raw=raw)
         if license_id:
             return response
 
         # make multiple api calls until all records are retrieved
         if all_records:
-            response = self.__fetch_all__(url=url, args=args, raw=raw,
-                                          response=response, data_key='license')
+            response = self.__read_all__(url=url, args=args, raw=raw,
+                                         response=response, data_key='license')
         return response
 
     def get_amendments(self, license_id, amendment_id=None, q_params={}, raw=False):
@@ -469,5 +469,5 @@ class SubClientAcquistionsLicenses(Client):
         if amendment_id:
             url += ("/" + str(amendment_id))
 
-        response = self.fetch(url, args, raw=raw)
+        response = self.read(url, args, raw=raw)
         return response

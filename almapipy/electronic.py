@@ -78,14 +78,14 @@ class SubClientElectronicCollections(Client):
             if query:
                 args['q'] = self.__format_query__(query)
 
-        response = self.fetch(url, args, raw=raw)
+        response = self.read(url, args, raw=raw)
         if collection_id:
             return response
 
         # make multiple api calls until all records are retrieved
         if all_records:
-            response = self.__fetch_all__(url=url, args=args, raw=raw,
-                                          response=response, data_key='electronic_collection')
+            response = self.__read_all__(url=url, args=args, raw=raw,
+                                         response=response, data_key='electronic_collection')
         return response
 
 
@@ -119,7 +119,7 @@ class SubClientElectronicServices(Client):
         if service_id:
             url += ('/' + str(service_id))
 
-        return self.fetch(url, args, raw=raw)
+        return self.read(url, args, raw=raw)
 
 
 class SubClientElectronicPortfolios(Client):
@@ -154,4 +154,4 @@ class SubClientElectronicPortfolios(Client):
         url += "/portfolios"
         if portfolio_id:
             url += ('/' + str(portfolio_id))
-        return self.fetch(url, args, raw=raw)
+        return self.read(url, args, raw=raw)

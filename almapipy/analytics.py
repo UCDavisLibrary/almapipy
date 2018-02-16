@@ -54,7 +54,7 @@ class SubClientAnalyticsPaths(Client):
         args = q_params.copy()
         args['apikey'] = self.cnxn_params['api_key']
 
-        return self.fetch(url, args, raw=raw)
+        return self.read(url, args, raw=raw)
 
 
 class SubClientAnalyticsReports(Client):
@@ -103,7 +103,7 @@ class SubClientAnalyticsReports(Client):
         row_tag = "{urn:schemas-microsoft-com:xml-analysis:rowset}Row"
         set_tag = "{urn:schemas-microsoft-com:xml-analysis:rowset}rowset"
         columns_tag = "{http://www.w3.org/2001/XMLSchema}element"
-        report = self.fetch(url, args, raw=raw)
+        report = self.read(url, args, raw=raw)
 
         if raw:
             # extract xml from raw response
@@ -131,7 +131,7 @@ class SubClientAnalyticsReports(Client):
             # make additional api calls and append rows to original xml
             while get_more:
 
-                report_more = self.fetch(url, margs, raw=raw)
+                report_more = self.read(url, margs, raw=raw)
 
                 if raw:
                     responses += [report_more]

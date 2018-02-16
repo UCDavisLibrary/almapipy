@@ -77,7 +77,7 @@ class SubClientBibsCatalog(Client):
                 raise utils.ArgError(message)
             args['expand'] = expand
 
-        return self.fetch(url, args, raw=raw)
+        return self.read(url, args, raw=raw)
 
     def get_holdings(self, bib_id, holding_id=None, q_params={}, raw=False):
         """Returns list of holding records or single holding record
@@ -108,7 +108,7 @@ class SubClientBibsCatalog(Client):
         args = q_params.copy()
         args['apikey'] = self.cnxn_params['api_key']
 
-        return self.fetch(url, args, raw=raw)
+        return self.read(url, args, raw=raw)
 
     def get_holding_items(self, bib_id, holding_id, item_id=None, q_params={}, raw=False):
         """Returns list of holding record items or a single item
@@ -135,7 +135,7 @@ class SubClientBibsCatalog(Client):
         args = q_params.copy()
         args['apikey'] = self.cnxn_params['api_key']
 
-        return self.fetch(url, args, raw=raw)
+        return self.read(url, args, raw=raw)
 
     def get_portfolios(self, bib_id, portfolio_id=None, q_params={}, raw=False):
         """Returns a list or single portfolio for a Bib.
@@ -164,7 +164,7 @@ class SubClientBibsCatalog(Client):
         args = q_params.copy()
         args['apikey'] = self.cnxn_params['api_key']
 
-        return self.fetch(url, args, raw=raw)
+        return self.read(url, args, raw=raw)
 
 
 class SubClientBibsCollections(Client):
@@ -202,7 +202,7 @@ class SubClientBibsCollections(Client):
         if query:
             args['q'] = self.__format_query__(query)
 
-        response = self.fetch(url, args, raw=raw)
+        response = self.read(url, args, raw=raw)
         return response
 
     def get_bibs(self, pid, q_params={}, raw=False):
@@ -224,7 +224,7 @@ class SubClientBibsCollections(Client):
         args = q_params.copy()
         args['apikey'] = self.cnxn_params['api_key']
 
-        return self.fetch(url, args, raw=raw)
+        return self.read(url, args, raw=raw)
 
 
 class SubClientBibsLoans(Client):
@@ -258,7 +258,7 @@ class SubClientBibsLoans(Client):
         args = q_params.copy()
         args['apikey'] = self.cnxn_params['api_key']
 
-        return self.fetch(url, args, raw=raw)
+        return self.read(url, args, raw=raw)
 
     def get_by_title(self, bib_id, loan_id=None, q_params={}, raw=False):
         """Returns Loan by title information.
@@ -280,7 +280,7 @@ class SubClientBibsLoans(Client):
         args = q_params.copy()
         args['apikey'] = self.cnxn_params['api_key']
 
-        return self.fetch(url, args, raw=raw)
+        return self.read(url, args, raw=raw)
 
 
 class SubClientBibsRequests(Client):
@@ -314,7 +314,7 @@ class SubClientBibsRequests(Client):
         args = q_params.copy()
         args['apikey'] = self.cnxn_params['api_key']
 
-        return self.fetch(url, args, raw=raw)
+        return self.read(url, args, raw=raw)
 
     def get_by_title(self, bib_id, request_id=None, q_params={}, raw=False):
         """Returns Loan by title information.
@@ -336,7 +336,7 @@ class SubClientBibsRequests(Client):
         args = q_params.copy()
         args['apikey'] = self.cnxn_params['api_key']
 
-        return self.fetch(url, args, raw=raw)
+        return self.read(url, args, raw=raw)
 
     def get_availability(self, bib_id, period, period_type='days',
                          holding_id=None, item_id=None, q_params={}, raw=False):
@@ -375,7 +375,7 @@ class SubClientBibsRequests(Client):
         args['period'] = str(period)
         args['period_type'] = str(period_type)
 
-        return self.fetch(url, args, raw=raw)
+        return self.read(url, args, raw=raw)
 
     def get_options(self, bib_id, user_id='GUEST',
                     holding_id=None, item_id=None,
@@ -412,7 +412,7 @@ class SubClientBibsRequests(Client):
         args['apikey'] = self.cnxn_params['api_key']
         args['user_id'] = str(user_id)
 
-        return self.fetch(url, args, raw=raw)
+        return self.read(url, args, raw=raw)
 
 
 class SubClientBibsRepresentations(Client):
@@ -440,7 +440,7 @@ class SubClientBibsRepresentations(Client):
         args = q_params.copy()
         args['apikey'] = self.cnxn_params['api_key']
 
-        return self.fetch(url, args, raw=raw)
+        return self.read(url, args, raw=raw)
 
     def get_details(self, bib_id, rep_id, files=False, q_params={}, raw=False):
         """Returns a specific Digital Representation's details.
@@ -467,7 +467,7 @@ class SubClientBibsRepresentations(Client):
         args = q_params.copy()
         args['apikey'] = self.cnxn_params['api_key']
 
-        return self.fetch(url, args, raw=raw)
+        return self.read(url, args, raw=raw)
 
 
 class SubClientBibsLinkedData(Client):
@@ -495,4 +495,4 @@ class SubClientBibsLinkedData(Client):
         args = q_params.copy()
         args['apikey'] = self.cnxn_params['api_key']
 
-        return self.fetch(url, args, raw=raw)
+        return self.read(url, args, raw=raw)
