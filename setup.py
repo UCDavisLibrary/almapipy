@@ -1,5 +1,5 @@
 from setuptools import setup
-
+#from distutils.core import setup
 try:
     from pypandoc import convert
 
@@ -17,11 +17,13 @@ setup(
     packages=['almapipy'],
     version=VERSION,
     description="Python requests wrapper for the Ex Libris Alma API",
+    license='MIT'
     long_description=read_md('README.md'),
     author="Steve Pelkey",
     author_email="spelkey@ucdavis.edu",
     url='https://github.com/UCDavisLibrary/almapipy',
     install_requires=['requests'],
+    keywords='alma exlibris exlibrisgroup api bibliographic'
     classifiers=[
         "Intended Audience :: Developers",
         "Intended Audience :: Education",
@@ -32,8 +34,6 @@ setup(
         "Programming Language :: Python",
         "Topic :: Software Development :: Libraries :: Python Modules",
 
-        'Programming Language :: Python :: 3.6',
-    ],
-
-    test_suite='test',
+        'Programming Language :: Python :: 3.6'
+    ]
 )
