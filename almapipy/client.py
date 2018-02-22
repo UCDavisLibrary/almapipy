@@ -19,10 +19,64 @@ class Client(object):
         # instantiate dictionary for storing alma api connection parameters
         self.cnxn_params = cnxn_params
 
+    def create(self, url, data, args, object_type, raw=False):
+        """
+        Uses requests library to make Exlibris API Post call.
+
+        Args:
+            url (str): Exlibris API endpoint url.
+            data (dict): Data to be posted.
+            args (dict): Query string parameters for API call.
+            object_type (str): Type of object to be posted (see alma docs)
+            raw (bool): If true, returns raw response.
+
+        Returns:
+            JSON-esque, xml, or raw response.
+        """
+        print(url)
+
+        # Determine format of data to be posted according to order of importance:
+        # 1) Local declaration, 2) dtype of data parameter, 3) global setting.
+        headers = {}
+        if 'format' not in args.keys():
+            if type(data) == ET or type(data) == ET.Element:
+                content_type = 'xml'
+            elif type(data) == dict:
+                content_type = 'json'
+            else:
+                content_type = self.cnxn_params['format']
+            args['format'] = self.cnxn_params['format']
+        else:
+            content_type = args['format']
+
+        # Declare data type in header, convert to string if necessary.
+        if content_type == 'json':
+            headers['content-type'] = 'application/json'
+            if type(data) != str:
+                data = json.dumps(data)
+        elif content_type == 'xml':
+            headers['content-type'] = 'application/xml'
+            if type(data) == ET or type(data) == ET.Element:
+                data = ET.tostring(data, encoding='unicode')
+            elif type(data) != str:
+                message = "XML payload must be either string or ElementTree."
+                raise utils.ArgError(message)
+        else:
+            message = "Post content type must be either 'json' or 'xml'"
+            raise utils.ArgError(message)
+
+        # Send request and parse response
+        response = requests.post(url, data=data, params=args, headers=headers)
+        if raw:
+            return response
+        content = self.__parse_response__(response)
+
+        return content
+
     def read(self, url, args, raw=False):
         """
-        Uses requests library to makes Exlibris API call.
-        Parses XML into python.
+        Uses requests library to make Exlibris API Get call.
+        Returns data of type specified during init of base class.
 
         Args:
             url (str): Exlibris API endpoint url.
@@ -32,7 +86,7 @@ class Client(object):
         Returns:
             JSON-esque, xml, or raw response.
         """
-        print(url)
+        # print(url)
 
         # handle data format. Allow for overriding of global setting.
         data_format = self.cnxn_params['format']
@@ -45,55 +99,8 @@ class Client(object):
         if raw:
             return response
 
-        # Get meta data from headers.
-        status = response.status_code
-        try:
-            response_type = response.headers['Content-Type']
-            response_type, charset = response_type.split(";")
-        except:
-            message = str(status) + " - Unknown Error"
-            raise utils.AlmaError(message, status, url)
-
-        # decode response if xml.
-        if response_type == 'application/xml':
-            xml_ns = self.cnxn_params['xml_ns']  # xml namespace
-            content = ET.fromstring(response.text)
-
-            # Received response from ex libris, but error retrieving data.
-            if str(status)[0] in ['4', '5']:
-                try:
-                    first_error = content.find("header:errorList", xml_ns)[0]
-                    message = first_error.find("header:errorCode", xml_ns).text
-                    message += " - "
-                    message += first_error.find("header:errorMessage", xml_ns).text
-                    message += ". See Alma documentation for more information."
-                except:
-                    message = str(status) + " - Unknown Error"
-                raise utils.AlmaError(message, status, url)
-
-        # decode response if json.
-        elif response_type == 'application/json':
-            content = response.json()
-
-            # Received response from ex libris, but error retrieving data.
-            if str(status)[0] in ['4', '5']:
-                try:
-                    first_error = content['errorList']['error'][0]
-                    message = first_error['errorCode']
-                    message += " - "
-                    message += first_error['errorMessage']
-                    message += ". See Alma documentation for more information."
-                except:
-                    message = str(status) + " - Unknown Error"
-                raise utils.AlmaError(message, status, url)
-
-        else:
-            content = response
-
-            if str(status)[0] in ['4', '5']:
-                message = str(status) + " - "
-                message += str(content.text)
-                raise utils.AlmaError(message, status, url)
+        # Parse content
+        content = self.__parse_response__(response)
 
         return content
 
@@ -181,3 +188,63 @@ class Client(object):
             response = responses
 
         return response
+
+    def __parse_response__(self, response):
+        """Parses alma response depending on content type.
+
+        Args:
+            response: requests object from Alma.
+
+        Returns:
+            Content of response in format specified in header.
+        """
+        status = response.status_code
+        url = response.url
+        try:
+            response_type = response.headers['Content-Type']
+            response_type, charset = response_type.split(";")
+        except:
+            message = 'Error ' + str(status) + response.text
+            raise utils.AlmaError(message, status, url)
+
+        # decode response if xml.
+        if response_type == 'application/xml':
+            xml_ns = self.cnxn_params['xml_ns']  # xml namespace
+            content = ET.fromstring(response.text)
+
+            # Received response from ex libris, but error retrieving data.
+            if str(status)[0] in ['4', '5']:
+                try:
+                    first_error = content.find("header:errorList", xml_ns)[0]
+                    message = first_error.find("header:errorCode", xml_ns).text
+                    message += " - "
+                    message += first_error.find("header:errorMessage", xml_ns).text
+                    message += ". See Alma documentation for more information."
+                except:
+                    message = 'Error ' + str(status) + " - " + str(content)
+                    raise utils.AlmaError(message, status, url)
+
+        # decode response if json.
+        elif response_type == 'application/json':
+            content = response.json()
+
+            # Received response from ex libris, but error retrieving data.
+            if str(status)[0] in ['4', '5']:
+                try:
+                    first_error = content['errorList']['error'][0]
+                    message = first_error['errorCode']
+                    message += " - "
+                    message += first_error['errorMessage']
+                    message += ". See Alma documentation for more information."
+                except:
+                    message = 'Error ' + str(status) + " - " + str(content)
+                    raise utils.AlmaError(message, status, url)
+
+        else:
+            content = response
+
+            if str(status)[0] in ['4', '5']:
+                message = str(status) + " - "
+                message += str(content.text)
+                raise utils.AlmaError(message, status, url)
+        return content

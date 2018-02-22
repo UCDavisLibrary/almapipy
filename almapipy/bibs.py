@@ -54,9 +54,6 @@ class SubClientBibsCatalog(Client):
         url = self.cnxn_params['api_uri_full']
 
         # validate arguments
-        if type(q_params) != dict:
-            message = "q_params must be a dictionary."
-            raise utils.ArgError(message)
         if type(bib_ids) != list and type(bib_ids) != str:
             message = "bib_ids must be a list of ids, or single string."
             raise utils.ArgError(message)
@@ -166,6 +163,70 @@ class SubClientBibsCatalog(Client):
 
         return self.read(url, args, raw=raw)
 
+    def post(self, data, from_nz_mms_id=None, normalization=None, validate=False,
+             q_params={}, raw=False):
+        """Creates a new Bib record or local record for a NZ record.
+
+        Args:
+            data (xml/str): This method takes a Bib object.
+                When creating linked record send an empty Bib object: <bib/>
+                Note: JSON is not supported for this API.
+            from_nz_mms_id (str): The MMS_ID of the Network-Zone record.
+                Leave empty when creating a regular local record.
+            normalization (str): The id of the normalization profile to run.
+            validate (bool): Boolean flag for indicating whether to validate the record.
+            q_params (dict): Any additional query parameters.
+            raw (bool): If true, returns raw requests object.
+
+        Returns:
+            Bib objected created.
+
+        """
+        url = self.cnxn_params['api_uri_full']
+        object_type = 'bib'
+
+        args = q_params.copy()
+        args['apikey'] = self.cnxn_params['api_key']
+        args['format'] = 'xml'
+
+        if from_nz_mms_id:
+            args['from_nz_mms_id'] = from_nz_mms_id
+        if normalization:
+            args['normalization'] = normalization
+        if validate:
+            args['validate'] = validate
+
+        response = self.create(url, data, args, object_type, raw=raw)
+
+        return response
+
+    def post_holding(self, data, bib_id, q_params={}, raw=False):
+        """Creates a a new holding record for a Bib record.
+
+        Args:
+            data (xml/str): This method takes a Holding object.
+                Note: JSON is not supported for this API.
+            bib_id (str): The bib ID (mms_id).
+            q_params (dict): Any additional query parameters.
+            raw (bool): If true, returns raw requests object.
+
+        Returns:
+            Bib objected created.
+
+        """
+        url = self.cnxn_params['api_uri_full']
+        url += ("/" + str(bib_id))
+        url += '/holdings'
+        object_type = 'holding'
+
+        args = q_params.copy()
+        args['apikey'] = self.cnxn_params['api_key']
+        args['format'] = 'xml'
+
+        response = self.create(url, data, args, object_type, raw=raw)
+
+        return response
+
 
 class SubClientBibsCollections(Client):
     """Handles collections"""
@@ -225,6 +286,32 @@ class SubClientBibsCollections(Client):
         args['apikey'] = self.cnxn_params['api_key']
 
         return self.read(url, args, raw=raw)
+
+    def post_bib(self, data, pid, q_params={}, raw=False):
+        """Adds a bibliographic title into a given collection.
+
+        Args:
+            data (xml/json/str): A Bib object with only mms_id.
+            pid (str): The collection ID.
+            q_params (dict): Any additional query parameters.
+            raw (bool): If true, returns raw requests object.
+
+        Returns:
+            Bib objected added to collection.
+
+        """
+        url = self.cnxn_params['api_uri_full']
+        url += ("/" + str(pid))
+        url += '/bibs'
+
+        object_type = 'bib'
+
+        args = q_params.copy()
+        args['apikey'] = self.cnxn_params['api_key']
+
+        response = self.create(url, data, args, object_type, raw=raw)
+
+        return response
 
 
 class SubClientBibsLoans(Client):
