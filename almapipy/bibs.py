@@ -66,12 +66,9 @@ class SubClientBibsCatalog(Client):
         if type(bib_ids) == str:
             url += ('/' + bib_ids)
         else:
-            args['mms_id'] = bib_ids
+            args['mms_id'] = ",".join(bib_ids)
 
         if expand:
-            if expand not in ['p_avail', 'e_avail', 'd_avail']:
-                message = 'expand must be one of the follow: ' + str(expand)
-                raise utils.ArgError(message)
             args['expand'] = expand
 
         return self.read(url, args, raw=raw)
@@ -179,7 +176,7 @@ class SubClientBibsCatalog(Client):
             raw (bool): If true, returns raw requests object.
 
         Returns:
-            Bib objected created.
+            Bib object created.
 
         """
         url = self.cnxn_params['api_uri_full']
@@ -211,7 +208,7 @@ class SubClientBibsCatalog(Client):
             raw (bool): If true, returns raw requests object.
 
         Returns:
-            Bib objected created.
+            Holding object created.
 
         """
         url = self.cnxn_params['api_uri_full']
@@ -222,6 +219,35 @@ class SubClientBibsCatalog(Client):
         args = q_params.copy()
         args['apikey'] = self.cnxn_params['api_key']
         args['format'] = 'xml'
+
+        response = self.create(url, data, args, object_type, raw=raw)
+
+        return response
+
+    def post_holding_item(self, data, bib_id, holding_id, q_params={}, raw=False):
+        """Creates new item for for a Bib/holding record.
+
+        Args:
+            data (xml/str): This method takes a Holding object.
+                Note: JSON is not supported for this API.
+            bib_id (str): The bib ID (mms_id).
+            holding_id (str): The Holding Record ID (holding_id).
+                May be 'ALL' to retrieve all holdings for a Bib.
+            q_params (dict): Any additional query parameters.
+            raw (bool): If true, returns raw requests object.
+
+        Returns:
+            Item object created.
+
+        """
+        url = self.cnxn_params['api_uri_full']
+        url += ("/" + str(bib_id))
+        url += '/holdings/'
+        url += (str(holding_id) + "/items")
+        object_type = 'item'
+
+        args = q_params.copy()
+        args['apikey'] = self.cnxn_params['api_key']
 
         response = self.create(url, data, args, object_type, raw=raw)
 
@@ -286,6 +312,31 @@ class SubClientBibsCollections(Client):
         args['apikey'] = self.cnxn_params['api_key']
 
         return self.read(url, args, raw=raw)
+
+    def post(self, data, record_format='marc21', q_params={}, raw=False):
+        """Creates a new collection.
+
+        Args:
+            data (xml/json/str): A Collection object.
+            record_format (str): The record format which may be marc21, unimarc,
+                kormarc, cnmarc, dc, dcap01, or dcap02.
+            q_params (dict): Any additional query parameters.
+            raw (bool): If true, returns raw requests object.
+
+        Returns:
+            Collection object created.
+
+        """
+        url = self.cnxn_params['api_uri_full']
+        object_type = 'collection'
+
+        args = q_params.copy()
+        args['apikey'] = self.cnxn_params['api_key']
+        args['record_format'] = record_format
+
+        response = self.create(url, data, args, object_type, raw=raw)
+
+        return response
 
     def post_bib(self, data, pid, q_params={}, raw=False):
         """Adds a bibliographic title into a given collection.
@@ -368,6 +419,38 @@ class SubClientBibsLoans(Client):
         args['apikey'] = self.cnxn_params['api_key']
 
         return self.read(url, args, raw=raw)
+
+    def post(self, data, bib_id, holding_id, item_id, user_id, q_params={}, raw=False):
+        """Creates a loan record to a user.
+        The loan will be created according to the library's policy.
+
+        Args:
+            data (xml/json/str): A Loan object.
+            bib_id (str): The bib ID (mms_id).
+            holding_id (str): The Holding Record ID (holding_id).
+            item_id (str): The holding item ID (item_pid).
+            user_id (str): The unique identifier of the loaning user.
+            q_params (dict): Any additional query parameters.
+            raw (bool): If true, returns raw requests object.
+
+        Returns:
+            Loan object created.
+
+        """
+        url = self.cnxn_params['api_uri_full']
+        url += ("/" + str(bib_id))
+        url += ('/holdings/' + str(holding_id))
+        url += ('/items/' + str(item_id) + "/loans")
+
+        object_type = 'item_loan'
+
+        args = q_params.copy()
+        args['apikey'] = self.cnxn_params['api_key']
+        args['user_id'] = str(user_id)
+
+        response = self.create(url, data, args, object_type, raw=raw)
+
+        return response
 
 
 class SubClientBibsRequests(Client):
@@ -501,6 +584,74 @@ class SubClientBibsRequests(Client):
 
         return self.read(url, args, raw=raw)
 
+    def post_for_title(self, data, bib_id, user_id=None, q_params={}, raw=False):
+        """Creates a request for a library resouce.
+        The request can be for a physical item (request types: hold, booking),
+        or a request for digitizing a file (request type: digitization)
+
+        Args:
+            data (xml/json/str): A Loan object.
+            bib_id (str): The bib ID (mms_id).
+            user_id (str): The unique identifier of the loaning user.
+            q_params (dict): Any additional query parameters.
+            raw (bool): If true, returns raw requests object.
+
+        Returns:
+            Loan object created.
+
+        """
+        url = self.cnxn_params['api_uri_full']
+        url += ("/" + str(bib_id))
+        url += ('/requests')
+
+        object_type = 'user_request'
+
+        args = q_params.copy()
+        args['apikey'] = self.cnxn_params['api_key']
+
+        if user_id:
+            args['user_id'] = str(user_id)
+
+        response = self.create(url, data, args, object_type, raw=raw)
+
+        return response
+
+    def post_for_item(self, data, bib_id, holding_id,
+                      item_id, user_id=None, q_params={}, raw=False):
+        """Creates a request for a library resouce.
+        The request can be for a physical item (request types: hold, booking),
+        or a request for digitizing a file (request type: digitization)
+
+        Args:
+            data (xml/json/str): A Loan object.
+            bib_id (str): The bib ID (mms_id).
+            holding_id (str): The holding id of the record.
+            item_id (str): The holding item ID (item_pid).
+            user_id (str): The unique identifier of the loaning user.
+            q_params (dict): Any additional query parameters.
+            raw (bool): If true, returns raw requests object.
+
+        Returns:
+            Loan object created.
+
+        """
+        url = self.cnxn_params['api_uri_full']
+        url += ("/" + str(bib_id))
+        url += ('/holdings/' + holding_id)
+        url += ('/items/' + item_id + "/requests")
+
+        object_type = 'user_request'
+
+        args = q_params.copy()
+        args['apikey'] = self.cnxn_params['api_key']
+
+        if user_id:
+            args['user_id'] = str(user_id)
+
+        response = self.create(url, data, args, object_type, raw=raw)
+
+        return response
+
 
 class SubClientBibsRepresentations(Client):
     """Handles Digital Representations"""
@@ -555,6 +706,61 @@ class SubClientBibsRepresentations(Client):
         args['apikey'] = self.cnxn_params['api_key']
 
         return self.read(url, args, raw=raw)
+
+    def post(self, data, bib_id, generate_label=False, q_params={}, raw=False):
+        """Creates a digital representation for a bib record.
+
+        Args:
+            data (xml/json/str): A Loan object.
+            bib_id (str): The bib ID (mms_id).
+            generate_label (bool): Auto-generate label: true/false
+            q_params (dict): Any additional query parameters.
+            raw (bool): If true, returns raw requests object.
+
+        Returns:
+            Representation object.
+
+        """
+        url = self.cnxn_params['api_uri_full']
+        url += ("/" + str(bib_id) + '/representations/')
+
+        object_type = 'representation'
+
+        args = q_params.copy()
+        args['apikey'] = self.cnxn_params['api_key']
+        args['generate_label'] = generate_label
+
+        response = self.create(url, data, args, object_type, raw=raw)
+
+        return response
+
+    def post_file(self, data, bib_id, rep_id, q_params={}, raw=False):
+        """Creates a file for a digital representation.
+
+        Args:
+            data (xml/json/str): A Loan object.
+            bib_id (str): The bib ID (mms_id).
+            rep_id  (str): The representation id.
+            generate_label (bool): Auto-generate label: true/false
+            q_params (dict): Any additional query parameters.
+            raw (bool): If true, returns raw requests object.
+
+        Returns:
+            Representation object.
+
+        """
+        url = self.cnxn_params['api_uri_full']
+        url += ("/" + str(bib_id))
+        url += ('/representations/' + str(rep_id) + "/files")
+
+        object_type = 'representation'
+
+        args = q_params.copy()
+        args['apikey'] = self.cnxn_params['api_key']
+
+        response = self.create(url, data, args, object_type, raw=raw)
+
+        return response
 
 
 class SubClientBibsLinkedData(Client):
