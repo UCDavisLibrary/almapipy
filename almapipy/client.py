@@ -202,7 +202,8 @@ class Client(object):
         url = response.url
         try:
             response_type = response.headers['Content-Type']
-            response_type, charset = response_type.split(";")
+            if ";" in response_type:
+                response_type, charset = response_type.split(";")
         except:
             message = 'Error ' + str(status) + response.text
             raise utils.AlmaError(message, status, url)
@@ -219,10 +220,10 @@ class Client(object):
                     message = first_error.find("header:errorCode", xml_ns).text
                     message += " - "
                     message += first_error.find("header:errorMessage", xml_ns).text
-                    message += ". See Alma documentation for more information."
+                    message += " See Alma documentation for more information."
                 except:
                     message = 'Error ' + str(status) + " - " + str(content)
-                    raise utils.AlmaError(message, status, url)
+                raise utils.AlmaError(message, status, url)
 
         # decode response if json.
         elif response_type == 'application/json':
@@ -231,14 +232,19 @@ class Client(object):
             # Received response from ex libris, but error retrieving data.
             if str(status)[0] in ['4', '5']:
                 try:
-                    first_error = content['errorList']['error'][0]
+                    if 'web_service_result' in content.keys():
+                        first_error = content['web_service_result']['errorList']['error'][0]
+                    else:
+                        first_error = content['errorList']['error'][0]
                     message = first_error['errorCode']
                     message += " - "
                     message += first_error['errorMessage']
-                    message += ". See Alma documentation for more information."
+                    if 'trackingID' in first_error.keys():
+                        message += "TrackingID: " + message['trackingID']
+                    message += " See Alma documentation for more information."
                 except:
                     message = 'Error ' + str(status) + " - " + str(content)
-                    raise utils.AlmaError(message, status, url)
+                raise utils.AlmaError(message, status, url)
 
         else:
             content = response
