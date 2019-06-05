@@ -27,7 +27,7 @@ Post, Put and Delete functions will be gradually added in future releases.
 ```python
 # Import and call primary Client class
 from almapipy import AlmaCnxn
-alma = AlmaCnxn('your_api_key', format='json')
+alma = AlmaCnxn('your_api_key', data_format='json')
 ```
 ### Access Bibliographic Data
 Alma provides a set of Web services for handling bibliographic records related information, enabling you to quickly and easily manipulate bibliographic records related details. These Web services can be used by external systems to retrieve or update bibliographic records related data.
