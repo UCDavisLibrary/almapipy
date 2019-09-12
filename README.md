@@ -3,7 +3,7 @@
 almapipy is python requests wrapper for easily accessing the Ex Libris Alma API. It is designed to be lightweight, and imposes a structure that mimics the [Alma API architecture](https://developers.exlibrisgroup.com/alma/apis).
 
 ## Installation
-```pip install almapipy```
+`pip install almapipy`
 
 ## Progress and Roadmap
 Get functionality has been developed around all the Alma APIs (listed below).

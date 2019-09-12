@@ -1,16 +1,10 @@
 from setuptools import setup
-#from distutils.core import setup
-try:
-    from pypandoc import convert
+# from distutils.core import setup
 
-    def read_md(f): return convert(f, 'rst')
-except ImportError:
-    print("warning: pypandoc module not found, could not convert Markdown to RST")
+with open("README.md", "r") as fh:
+    long_description = fh.read()
 
-    def read_md(f): return open(f, 'r').read()
-
-
-VERSION = "1.0.1"
+VERSION = "1.0.2"
 
 setup(
     name="almapipy",
@@ -18,11 +12,13 @@ setup(
     version=VERSION,
     description="Python requests wrapper for the Ex Libris Alma API",
     license='MIT',
-    long_description=read_md('README.md'),
+    long_description=long_description,
+    long_description_content_type="text/markdown",
     author="Steve Pelkey",
     author_email="spelkey@ucdavis.edu",
     url='https://github.com/UCDavisLibrary/almapipy',
     install_requires=['requests'],
+    python_requires='>=3.0',
     keywords='alma exlibris exlibrisgroup api bibliographic',
     classifiers=[
         "Intended Audience :: Developers",
@@ -33,7 +29,6 @@ setup(
         "Operating System :: OS Independent",
         "Programming Language :: Python",
         "Topic :: Software Development :: Libraries :: Python Modules",
-
-        'Programming Language :: Python :: 3.6'
+        'Programming Language :: Python :: 3'
     ]
 )
