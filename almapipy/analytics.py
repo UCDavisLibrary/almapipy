@@ -9,20 +9,26 @@ class SubClientAnalytics(Client):
     For more info: https://developers.exlibrisgroup.com/alma/apis/analytics
     """
 
-    def __init__(self, cnxn_params={}):
+    def __init__(self, cnxn_params={}, is_primo=False):
 
         # Copy cnnection parameters and add info specific to API.
         self.cnxn_params = cnxn_params.copy()
-        self.cnxn_params['api_uri'] = "/almaws/v1/analytics"
-        self.cnxn_params['web_doc'] = "https://developers.exlibrisgroup.com/alma/apis/analytics"
-        self.cnxn_params['wadl_url'] = "https://developers.exlibrisgroup.com/resources/wadl/10788916-19f6-4f19-aaf1-c18fa0c31ccd.wadl"
-        self.cnxn_params['api_uri_full'] = self.cnxn_params['base_uri']
-        self.cnxn_params['api_uri_full'] += self.cnxn_params['api_uri']
-        self.cnxn_params['xml_ns']['report'] = 'urn:schemas-microsoft-com:xml-analysis:rowset'
+        if is_primo:
+            self.cnxn_params['api_uri'] = "/primo/v1/analytics"
+            self.cnxn_params['api_uri_full'] = self.cnxn_params['base_uri']
+            self.cnxn_params['api_uri_full'] += self.cnxn_params['api_uri']
+            self.reports = SubClientAnalyticsReports(self.cnxn_params)
+        else:
+            self.cnxn_params['api_uri'] = "/almaws/v1/analytics"
+            self.cnxn_params['web_doc'] = "https://developers.exlibrisgroup.com/alma/apis/analytics"
+            self.cnxn_params['wadl_url'] = "https://developers.exlibrisgroup.com/resources/wadl/10788916-19f6-4f19-aaf1-c18fa0c31ccd.wadl"
+            self.cnxn_params['api_uri_full'] = self.cnxn_params['base_uri']
+            self.cnxn_params['api_uri_full'] += self.cnxn_params['api_uri']
+            self.cnxn_params['xml_ns']['report'] = 'urn:schemas-microsoft-com:xml-analysis:rowset'
 
-        # Hook in subclients of api
-        self.paths = SubClientAnalyticsPaths(self.cnxn_params)
-        self.reports = SubClientAnalyticsReports(self.cnxn_params)
+            # Hook in subclients of api
+            self.paths = SubClientAnalyticsPaths(self.cnxn_params)
+            self.reports = SubClientAnalyticsReports(self.cnxn_params)
 
 
 class SubClientAnalyticsPaths(Client):
@@ -124,7 +130,13 @@ class SubClientAnalyticsReports(Client):
                 margs['format'] = 'xml'
 
                 # find report content in XML report
-                xml_rows = list(report.iter(set_tag))[0]
+                for tag in [set_tag, 'rowset']:
+                    xml_rows = list(report.iter(tag))
+                    if xml_rows:
+                        xml_rows = xml_rows[0]
+                        break
+                else:
+                    raise utils.AlmaError("Unable to find XML rowset.")
             else:
                 get_more = False
 
@@ -138,7 +150,11 @@ class SubClientAnalyticsReports(Client):
                     report_more = ET.fromstring(report_more.text)
 
                 else:
-                    for new_row in report_more.iter(row_tag):
+                    for tag in [row_tag, 'Row']:
+                        new_rows = list(report_more.iter(tag))
+                        if new_rows:
+                            break
+                    for new_row in new_rows:
                         xml_rows.append(new_row)
 
                 # break loop if no more records
@@ -157,14 +173,21 @@ class SubClientAnalyticsReports(Client):
                 key = col.attrib['name']
                 try:
                     value = col.attrib['{urn:saw-sql}columnHeading']
-                except:
+                except Exception:
                     value = col.attrib['name']
                 value = value.lower().replace(" ", "_")
                 headers[key] = value
 
+            # find report content in XML report
+            for tag in [row_tag, 'Row']:
+                rows = list(report.iter(tag))
+                if rows:
+                    break
+            else:
+                raise utils.AlmaError("Unable to find XML rows.")
+
             # covert to list of dicts
             dicts = []
-            rows = report.iter(row_tag)
             for row in rows:
                 values = [col.text for col in row]
                 keys = [headers[col.tag.split('}')[-1]] for col in row]

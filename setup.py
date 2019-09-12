@@ -10,20 +10,20 @@ except ImportError:
     def read_md(f): return open(f, 'r').read()
 
 
-VERSION = "1.0.0"
+VERSION = "1.0.1"
 
 setup(
     name="almapipy",
     packages=['almapipy'],
     version=VERSION,
     description="Python requests wrapper for the Ex Libris Alma API",
-    license='MIT'
+    license='MIT',
     long_description=read_md('README.md'),
     author="Steve Pelkey",
     author_email="spelkey@ucdavis.edu",
     url='https://github.com/UCDavisLibrary/almapipy',
     install_requires=['requests'],
-    keywords='alma exlibris exlibrisgroup api bibliographic'
+    keywords='alma exlibris exlibrisgroup api bibliographic',
     classifiers=[
         "Intended Audience :: Developers",
         "Intended Audience :: Education",
