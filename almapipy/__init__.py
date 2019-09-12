@@ -16,7 +16,7 @@ from .conf import SubClientConfiguration
 from .partners import SubClientPartners
 from .electronic import SubClientElectronic
 from .task_lists import SubClientTaskList
-from .primo import *
+from .primo import SubClientPrimoSearch
 from . import utils
 
 
@@ -133,3 +133,4 @@ class PrimoCnxn(Client):
 
         # Hook in the various Primo APIs based on what API key can access
         self.search = SubClientPrimoSearch(self.cnxn_params)
+        self.analytics = SubClientAnalytics(self.cnxn_params, is_primo=True)
