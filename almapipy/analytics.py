@@ -119,6 +119,7 @@ class SubClientAnalyticsReports(Client):
             responses = [report]
             report = ET.fromstring(report.text)
 
+        get_more = False
         if all_records:
             # check if there are more records to get
             if report[0].find('IsFinished').text == 'false':
@@ -137,8 +138,6 @@ class SubClientAnalyticsReports(Client):
                         break
                 else:
                     raise utils.AlmaError("Unable to find XML rowset.")
-            else:
-                get_more = False
 
             # make additional api calls and append rows to original xml
             while get_more:
@@ -184,7 +183,18 @@ class SubClientAnalyticsReports(Client):
                 if rows:
                     break
             else:
-                raise utils.AlmaError("Unable to find XML rows.")
+                for tag in [set_tag, 'rowset']:
+                    rows = list(report.iter(tag))
+                    if rows:
+                        rows = rows[0]
+                        break
+                else:
+                    raise utils.AlmaError("Unable to find XML rowset.")
+                if len(rows) > 1:
+                    # report is possibly not empty. check xml structure.
+                    raise utils.AlmaError("Unable to find XML rows but rowset has data. Check XML structure.")
+                else:
+                    return []  # this report is empty
 
             # covert to list of dicts
             dicts = []
